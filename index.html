@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#0a0e1a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="description" content="Gestiona tus materias y notas universitarias"/>
+<link rel="manifest" href="./manifest.json"/>
+<title>NotaUDES</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #07090f;
+    --surface: #0f1320;
+    --surface2: #161b2e;
+    --border: rgba(108,99,255,0.15);
+    --accent: #6c63ff;
+    --accent2: #ff6b6b;
+    --accent3: #43e97b;
+    --accent4: #f7b731;
+    --text: #e8eaf6;
+    --muted: #6b7280;
+    --radius: 16px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ── Fondo animado ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(108,99,255,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 30% at 80% 80%, rgba(67,233,123,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── Header ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(7,9,15,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.3rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .btn-add-materia {
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    color: white; border: none; cursor: pointer;
+    padding: 8px 16px; border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500; font-size: 0.85rem;
+    display: flex; align-items: center; gap: 6px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.3);
+  }
+
+  .btn-add-materia:active { transform: scale(0.95); }
+
+  /* ── Contenido ── */
+  main {
+    position: relative; z-index: 1;
+    padding: 20px 16px 100px;
+    max-width: 600px; margin: 0 auto;
+  }
+
+  /* ── Ponderado global ── */
+  .ponderado-card {
+    background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(67,233,123,0.1));
+    border: 1px solid rgba(108,99,255,0.3);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    animation: slideDown 0.4s ease;
+  }
+
+  .ponderado-info h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .ponderado-valor {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem; font-weight: 800;
+    background: linear-gradient(135deg, #a78bfa, var(--accent3));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .ponderado-sub { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+  .ponderado-ring {
+    width: 72px; height: 72px;
+    position: relative;
+  }
+
+  .ponderado-ring svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 6; }
+  .ring-fill {
+    fill: none; stroke: url(#ringGrad); stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 188;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .ring-text {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+  }
+
+  /* ── Materia card ── */
+  .materia-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+    animation: slideUp 0.3s ease;
+  }
+
+  .materia-card:hover { box-shadow: 0 8px 32px rgba(108,99,255,0.12); }
+
+  .materia-header {
+    padding: 16px 16px 12px;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .materia-left { flex: 1; }
+
+  .materia-nombre {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .materia-meta {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 0.7rem; padding: 2px 8px;
+    border-radius: 20px; font-weight: 500;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+  }
+
+  .badge-accent { background: rgba(108,99,255,0.15); border-color: rgba(108,99,255,0.3); color: #a78bfa; }
+
+  .materia-nota-actual {
+    text-align: right;
+    flex-shrink: 0; margin-left: 12px;
+  }
+
+  .nota-grande {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  .nota-label { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+
+  .nota-verde { color: var(--accent3); }
+  .nota-amarilla { color: var(--accent4); }
+  .nota-roja { color: var(--accent2); }
+  .nota-gris { color: var(--muted); }
+
+  /* ── Cortes ── */
+  .materia-body {
+    padding: 0 16px 16px;
+    display: none;
+  }
+
+  .materia-body.open { display: block; }
+
+  .necesitas-banner {
+    background: linear-gradient(90deg, rgba(247,183,49,0.1), transparent);
+    border-left: 3px solid var(--accent4);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+  }
+
+  .necesitas-banner strong { color: var(--accent4); font-family: 'Syne', sans-serif; }
+
+  .cortes-grid { display: flex; flex-direction: column; gap: 8px; }
+
+  .corte-item {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+  }
+
+  .corte-left { flex: 1; }
+  .corte-nombre { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+
+  .corte-bar-wrap {
+    height: 4px; background: rgba(255,255,255,0.06);
+    border-radius: 2px; margin-top: 4px;
+    overflow: hidden;
+  }
+
+  .corte-bar {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), #a78bfa);
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .corte-right { text-align: right; flex-shrink: 0; }
+  .corte-nota { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+  .corte-pct { font-size: 0.7rem; color: var(--muted); }
+
+  .btn-delete-corte {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 14px;
+    padding: 4px; border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .btn-delete-corte:hover { color: var(--accent2); background: rgba(255,107,107,0.1); }
+
+  .divider {
+    height: 1px; background: var(--border);
+    margin: 12px 0;
+  }
+
+  .materia-actions {
+    display: flex; gap: 8px;
+  }
+
+  .btn-sm {
+    flex: 1; padding: 8px;
+    border-radius: 10px; border: 1px solid;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+
+  .btn-agregar-corte {
+    background: rgba(108,99,255,0.1);
+    border-color: rgba(108,99,255,0.3);
+    color: #a78bfa;
+  }
+
+  .btn-agregar-corte:hover { background: rgba(108,99,255,0.2); }
+
+  .btn-eliminar-materia {
+    background: rgba(255,107,107,0.08);
+    border-color: rgba(255,107,107,0.2);
+    color: var(--accent2);
+    flex: 0; padding: 8px 12px;
+  }
+
+  .btn-eliminar-materia:hover { background: rgba(255,107,107,0.15); }
+
+  /* ── Chevron ── */
+  .chevron {
+    font-size: 14px; color: var(--muted);
+    transition: transform 0.2s;
+    flex-shrink: 0; margin-left: 8px; margin-top: 4px;
+  }
+
+  .chevron.open { transform: rotate(180deg); }
+
+  /* ── Empty ── */
+  .empty-state {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+    animation: fadeIn 0.5s ease;
+  }
+
+  .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
+  .empty-state h2 { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
+  .empty-state p { font-size: 0.85rem; line-height: 1.6; }
+
+  /* ── Modal ── */
+  .overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: flex-end;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+
+  .overlay.show { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    width: 100%; max-width: 600px; margin: 0 auto;
+    padding: 24px 20px 36px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+    max-height: 90dvh; overflow-y: auto;
+  }
+
+  .overlay.show .modal { transform: translateY(0); }
+
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+
+  .form-group { margin-bottom: 14px; }
+
+  .form-group label {
+    display: block; font-size: 0.75rem;
+    color: var(--muted); font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .form-group input, .form-group select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+  }
+
+  .form-group select option { background: var(--surface2); }
+
+  .form-row { display: flex; gap: 10px; }
+  .form-row .form-group { flex: 1; }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+  .btn-cancel {
+    flex: 1; padding: 13px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-cancel:active { background: rgba(255,255,255,0.08); }
+
+  .btn-confirm {
+    flex: 1.5; padding: 13px;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    border: none; border-radius: 12px; color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.3);
+    transition: transform 0.15s, opacity 0.15s;
+  }
+
+  .btn-confirm:active { transform: scale(0.97); opacity: 0.9; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 10px 20px;
+    font-size: 0.85rem; font-weight: 500;
+    z-index: 300; white-space: nowrap;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+    opacity: 0;
+    box-shadow: var(--shadow);
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* ── Animaciones ── */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ── Porcentaje restante bar ── */
+  .pct-restante {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .pct-restante-bar {
+    flex: 1; height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px; overflow: hidden;
+  }
+
+  .pct-restante-fill {
+    height: 100%; border-radius: 2px;
+    background: rgba(255,255,255,0.2);
+    transition: width 0.5s;
+  }
+
+  /* ── Install banner ── */
+  .install-banner {
+    background: linear-gradient(135deg, rgba(67,233,123,0.1), rgba(108,99,255,0.1));
+    border: 1px solid rgba(67,233,123,0.2);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+    animation: slideDown 0.4s ease;
+  }
+
+  .install-banner-text { flex: 1; font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+  .install-banner-text strong { color: var(--accent3); font-family: 'Syne', sans-serif; }
+
+  .btn-install {
+    background: rgba(67,233,123,0.15);
+    border: 1px solid rgba(67,233,123,0.3);
+    color: var(--accent3);
+    padding: 8px 14px; border-radius: 10px;
+    font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+
+  .btn-install:active { background: rgba(67,233,123,0.25); }
+
+  .btn-close-banner {
+    background: none; border: none;
+    color: var(--muted); font-size: 18px;
+    cursor: pointer; padding: 4px;
+    line-height: 1;
+  }
+
+  /* ── No cortes ── */
+  .no-cortes {
+    text-align: center; padding: 16px;
+    color: var(--muted); font-size: 0.82rem;
+    font-style: italic;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(108,99,255,0.3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">📚</div>
+    NotaUDES
+  </div>
+  <button class="btn-add-materia" onclick="abrirModalMateria()">
+    <span style="font-size:16px">+</span> Materia
+  </button>
+</header>
+
+<!-- Main -->
+<main id="main">
+  <!-- Install banner -->
+  <div class="install-banner" id="installBanner" style="display:none">
+    <div>📲</div>
+    <div class="install-banner-text">
+      <strong>Instala la app</strong><br>
+      Accede sin internet desde tu pantalla de inicio
+    </div>
+    <button class="btn-install" id="btnInstall">Instalar</button>
+    <button class="btn-close-banner" onclick="document.getElementById('installBanner').style.display='none'">×</button>
+  </div>
+
+  <!-- Ponderado global -->
+  <div class="ponderado-card" id="ponderadoCard" style="display:none">
+    <div class="ponderado-info">
+      <h3>Ponderado semestral</h3>
+      <div class="ponderado-valor" id="ponderadoValor">0.0</div>
+      <div class="ponderado-sub" id="ponderadoSub">0 créditos registrados</div>
+    </div>
+    <div class="ponderado-ring">
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#43e97b"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="36" cy="36" r="30"/>
+        <circle class="ring-fill" id="ringFill" cx="36" cy="36" r="30" stroke-dashoffset="188"/>
+      </svg>
+      <div class="ring-text" id="ringText">–</div>
+    </div>
+  </div>
+
+  <!-- Materias -->
+  <div id="materiasContainer"></div>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">🎓</div>
+    <h2>Sin materias aún</h2>
+    <p>Toca el botón <strong>+ Materia</strong> para empezar a registrar tus notas del semestre</p>
+  </div>
+</main>
+
+<!-- Modal Materia -->
+<div class="overlay" id="overlayMateria">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Nueva materia</div>
+    <div class="form-group">
+      <label>Nombre de la materia</label>
+      <input type="text" id="inputNombreMateria" placeholder="Ej: Cálculo Multivariable"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Semestre</label>
+        <select id="inputSemestre">
+          <option value="">Selecciona</option>
+          <option>2025-1</option>
+          <option>2025-2</option>
+          <option>2026-1</option>
+          <option>2026-2</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Créditos</label>
+        <input type="number" id="inputCreditos" placeholder="3" min="1" max="10"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="cerrarModal('overlayMateria')">Cancelar</button>
+      <button class="btn-confirm" onclick="guardarMateria()">Agregar materia</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Corte -->
+<div class="overlay" id="overlayCorte">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📝 Agregar corte / nota</div>
+    <div class="form-group">
+      <label>Nombre del corte</label>
+      <input type="text" id="inputNombreCorte" placeholder="Ej: Primer Corte, Parcial 1…"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nota (0.0 – 5.0)</label>
+        <input type="number" id="inputNota" placeholder="3.8" min="0" max="5" step="0.1"/>
+      </div>
+      <div class="form-group">
+        <label>Porcentaje (%)</label>
+        <input type="number" id="inputPorcentaje" placeholder="30" min="1" max="100"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="cerrarModal('overlayCorte')">Cancelar</button>
+      <button class="btn-confirm" onclick="guardarCorte()">Guardar nota</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Estado ──
+let db = JSON.parse(localStorage.getItem('notaudes_db') || '{"materias":[]}');
+let materiaActualId = null;
+let deferredPrompt = null;
+
+function save() {
+  localStorage.setItem('notaudes_db', JSON.stringify(db));
+}
+
+// ── IDs ──
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+// ── Colores de nota ──
+function colorNota(n) {
+  if (n === null) return 'nota-gris';
+  if (n >= 3.5) return 'nota-verde';
+  if (n >= 3.0) return 'nota-amarilla';
+  return 'nota-roja';
+}
+
+// ── Cálculos ──
+function calcularMateria(materia) {
+  const cortes = materia.cortes || [];
+  if (!cortes.length) return { notaActual: null, pctUsado: 0, notaNecesaria: null };
+
+  let notaAcumulada = 0;
+  let pctUsado = 0;
+
+  cortes.forEach(c => {
+    notaAcumulada += (c.nota * c.porcentaje) / 100;
+    pctUsado += c.porcentaje;
+  });
+
+  const pctRestante = 100 - pctUsado;
+  let notaNecesaria = null;
+  if (pctRestante > 0) {
+    // Cuánto necesito sacar en lo que queda para aprobar con 3.0
+    const meta = 3.0;
+    notaNecesaria = ((meta - notaAcumulada) / pctRestante) * 100;
+    notaNecesaria = Math.max(0, Math.min(5, notaNecesaria));
+  }
+
+  return {
+    notaActual: Math.min(5, notaAcumulada * (100 / Math.max(pctUsado, 1))).toFixed(1),
+    notaAcumulada: notaAcumulada.toFixed(2),
+    pctUsado,
+    notaNecesaria: notaNecesaria !== null ? notaNecesaria.toFixed(2) : null,
+    pctRestante
+  };
+}
+
+function calcularPonderado() {
+  const materias = db.materias;
+  if (!materias.length) return null;
+
+  let sumaPonderada = 0, totalCreditos = 0;
+  materias.forEach(m => {
+    const { notaAcumulada, pctUsado } = calcularMateria(m);
+    if (pctUsado > 0) {
+      const notaReal = parseFloat(notaAcumulada);
+      sumaPonderada += notaReal * m.creditos;
+      totalCreditos += m.creditos;
+    }
+  });
+
+  if (!totalCreditos) return null;
+  return { valor: (sumaPonderada / totalCreditos).toFixed(2), creditos: totalCreditos };
+}
+
+// ── Render ──
+function render() {
+  const container = document.getElementById('materiasContainer');
+  const empty = document.getElementById('emptyState');
+  const pCard = document.getElementById('ponderadoCard');
+
+  container.innerHTML = '';
+
+  if (!db.materias.length) {
+    empty.style.display = 'block';
+    pCard.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  // Ponderado
+  const pond = calcularPonderado();
+  if (pond) {
+    pCard.style.display = 'flex';
+    document.getElementById('ponderadoValor').textContent = pond.valor;
+    document.getElementById('ponderadoSub').textContent = `${pond.creditos} crédito${pond.creditos !== 1 ? 's' : ''} con nota`;
+    const pct = (parseFloat(pond.valor) / 5) * 100;
+    const circum = 188;
+    document.getElementById('ringFill').style.strokeDashoffset = circum - (circum * pct / 100);
+    document.getElementById('ringText').textContent = pond.valor;
+  } else {
+    pCard.style.display = 'none';
+  }
+
+  // Materias
+  db.materias.forEach(m => {
+    const calc = calcularMateria(m);
+    const card = document.createElement('div');
+    card.className = 'materia-card';
+    card.id = `card-${m.id}`;
+
+    const notaColor = calc.notaActual !== null ? colorNota(parseFloat(calc.notaActual)) : 'nota-gris';
+    const notaDisplay = calc.notaActual !== null ? calc.notaActual : '–';
+
+    // Banner de nota necesaria
+    let bannerHtml = '';
+    if (calc.notaNecesaria !== null && calc.pctRestante > 0) {
+      const nn = parseFloat(calc.notaNecesaria);
+      const posible = nn <= 5;
+      bannerHtml = `
+        <div class="necesitas-banner">
+          ${posible
+            ? `Para aprobar con <strong>3.0</strong>, necesitas <strong>${nn.toFixed(2)}</strong> en el <strong>${calc.pctRestante}%</strong> restante`
+            : `⚠️ Con lo restante (<strong>${calc.pctRestante}%</strong>) no es posible alcanzar 3.0 matemáticamente`
+          }
+        </div>`;
+    } else if (calc.pctUsado >= 100) {
+      const nota = parseFloat(calc.notaActual);
+      bannerHtml = `
+        <div class="necesitas-banner" style="border-left-color:${nota >= 3 ? 'var(--accent3)' : 'var(--accent2)'}">
+          ${nota >= 3 ? `✅ Materia <strong>aprobada</strong> con ${calc.notaActual}` : `❌ Materia <strong>reprobada</strong> con ${calc.notaActual}`}
+        </div>`;
+    }
+
+    // Cortes
+    let cortesHtml = '';
+    if (m.cortes && m.cortes.length) {
+      // Barra de porcentaje restante
+      cortesHtml += `
+        <div class="pct-restante">
+          <span>${calc.pctUsado}% evaluado</span>
+          <div class="pct-restante-bar">
+            <div class="pct-restante-fill" style="width:${calc.pctUsado}%"></div>
+          </div>
+          <span>${calc.pctRestante}% restante</span>
+        </div>`;
+
+      cortesHtml += '<div class="cortes-grid">';
+      m.cortes.forEach(c => {
+        const contrib = ((c.nota * c.porcentaje) / 100).toFixed(2);
+        cortesHtml += `
+          <div class="corte-item">
+            <div class="corte-left">
+              <div class="corte-nombre">${c.nombre}</div>
+              <div class="corte-bar-wrap">
+                <div class="corte-bar" style="width:${(c.nota/5)*100}%"></div>
+              </div>
+            </div>
+            <div class="corte-right">
+              <div class="corte-nota ${colorNota(c.nota)}">${c.nota.toFixed(1)}</div>
+              <div class="corte-pct">${c.porcentaje}% → ${contrib} pts</div>
+            </div>
+            <button class="btn-delete-corte" onclick="eliminarCorte('${m.id}','${c.id}')" title="Eliminar">✕</button>
+          </div>`;
+      });
+      cortesHtml += '</div>';
+    } else {
+      cortesHtml = '<div class="no-cortes">Sin notas registradas aún</div>';
+    }
+
+    card.innerHTML = `
+      <div class="materia-header" onclick="toggleCard('${m.id}')">
+        <div class="materia-left">
+          <div class="materia-nombre">${m.nombre}</div>
+          <div class="materia-meta">
+            <span class="badge">${m.semestre}</span>
+            <span class="badge badge-accent">${m.creditos} crédito${m.creditos !== 1 ? 's' : ''}</span>
+            ${m.cortes.length ? `<span class="badge">${m.cortes.length} corte${m.cortes.length !== 1 ? 's' : ''}</span>` : ''}
+          </div>
+        </div>
+        <div class="materia-nota-actual">
+          <div class="nota-grande ${notaColor}">${notaDisplay}</div>
+          <div class="nota-label">/ 5.0</div>
+        </div>
+        <div class="chevron" id="chev-${m.id}">▾</div>
+      </div>
+      <div class="materia-body" id="body-${m.id}">
+        ${bannerHtml}
+        ${cortesHtml}
+        <div class="divider"></div>
+        <div class="materia-actions">
+          <button class="btn-sm btn-agregar-corte" onclick="abrirModalCorte('${m.id}')">
+            ＋ Agregar nota
+          </button>
+          <button class="btn-sm btn-eliminar-materia" onclick="eliminarMateria('${m.id}')">🗑️</button>
+        </div>
+      </div>`;
+
+    container.appendChild(card);
+  });
+}
+
+// ── Toggle card ──
+function toggleCard(id) {
+  const body = document.getElementById(`body-${id}`);
+  const chev = document.getElementById(`chev-${id}`);
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+// ── Modales ──
+function abrirModal(id) {
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarModal(id) {
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function abrirModalMateria() {
+  document.getElementById('inputNombreMateria').value = '';
+  document.getElementById('inputSemestre').value = '';
+  document.getElementById('inputCreditos').value = '';
+  abrirModal('overlayMateria');
+  setTimeout(() => document.getElementById('inputNombreMateria').focus(), 300);
+}
+
+function abrirModalCorte(materiaId) {
+  materiaActualId = materiaId;
+  document.getElementById('inputNombreCorte').value = '';
+  document.getElementById('inputNota').value = '';
+  document.getElementById('inputPorcentaje').value = '';
+  abrirModal('overlayCorte');
+  setTimeout(() => document.getElementById('inputNombreCorte').focus(), 300);
+}
+
+// ── Guardar materia ──
+function guardarMateria() {
+  const nombre = document.getElementById('inputNombreMateria').value.trim();
+  const semestre = document.getElementById('inputSemestre').value.trim();
+  const creditos = parseInt(document.getElementById('inputCreditos').value);
+
+  if (!nombre) { toast('Escribe el nombre de la materia'); return; }
+  if (!semestre) { toast('Selecciona el semestre'); return; }
+  if (!creditos || creditos < 1) { toast('Ingresa los créditos válidos'); return; }
+
+  db.materias.push({ id: uid(), nombre, semestre, creditos, cortes: [] });
+  save(); render();
+  cerrarModal('overlayMateria');
+  toast('✅ Materia agregada');
+}
+
+// ── Guardar corte ──
+function guardarCorte() {
+  const nombre = document.getElementById('inputNombreCorte').value.trim();
+  const nota = parseFloat(document.getElementById('inputNota').value);
+  const porcentaje = parseInt(document.getElementById('inputPorcentaje').value);
+
+  if (!nombre) { toast('Escribe el nombre del corte'); return; }
+  if (isNaN(nota) || nota < 0 || nota > 5) { toast('La nota debe estar entre 0.0 y 5.0'); return; }
+  if (!porcentaje || porcentaje < 1 || porcentaje > 100) { toast('El porcentaje debe ser entre 1 y 100'); return; }
+
+  const materia = db.materias.find(m => m.id === materiaActualId);
+  if (!materia) return;
+
+  const pctActual = materia.cortes.reduce((s, c) => s + c.porcentaje, 0);
+  if (pctActual + porcentaje > 100) {
+    toast(`Solo quedan ${100 - pctActual}% disponibles`);
+    return;
+  }
+
+  materia.cortes.push({ id: uid(), nombre, nota, porcentaje });
+  save(); render();
+  cerrarModal('overlayCorte');
+
+  // Abrir el card automáticamente
+  setTimeout(() => {
+    const body = document.getElementById(`body-${materiaActualId}`);
+    const chev = document.getElementById(`chev-${materiaActualId}`);
+    if (body && !body.classList.contains('open')) {
+      body.classList.add('open');
+      chev.classList.add('open');
+    }
+  }, 100);
+
+  toast('📝 Nota guardada');
+}
+
+// ── Eliminar corte ──
+function eliminarCorte(materiaId, corteId) {
+  const materia = db.materias.find(m => m.id === materiaId);
+  if (!materia) return;
+  materia.cortes = materia.cortes.filter(c => c.id !== corteId);
+  save(); render();
+
+  // Reabrir card
+  setTimeout(() => {
+    const body = document.getElementById(`body-${materiaId}`);
+    const chev = document.getElementById(`chev-${materiaId}`);
+    if (body) { body.classList.add('open'); chev.classList.add('open'); }
+  }, 50);
+
+  toast('Corte eliminado');
+}
+
+// ── Eliminar materia ──
+function eliminarMateria(id) {
+  if (!confirm('¿Eliminar esta materia y todas sus notas?')) return;
+  db.materias = db.materias.filter(m => m.id !== id);
+  save(); render();
+  toast('🗑️ Materia eliminada');
+}
+
+// ── Toast ──
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Cerrar modal al tocar overlay ──
+['overlayMateria','overlayCorte'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target.id === id) cerrarModal(id);
+  });
+});
+
+// ── PWA install ──
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('installBanner');
+  banner.style.display = 'flex';
+});
+
+document.getElementById('btnInstall').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBanner').style.display = 'none';
+  if (outcome === 'accepted') toast('✅ ¡App instalada!');
+});
+
+// ── Service Worker ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+// ── Init ──
+render();
+</script>
+</body>
+</html>
