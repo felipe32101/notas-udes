@@ -24,6 +24,7 @@
     --muted: #6b7280;
     --radius: 16px;
     --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --sidebar-w: 260px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -36,7 +37,6 @@
     overflow-x: hidden;
   }
 
-  /* ── Fondo animado ── */
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -44,6 +44,151 @@
       radial-gradient(ellipse 60% 40% at 20% 10%, rgba(108,99,255,0.12) 0%, transparent 70%),
       radial-gradient(ellipse 50% 30% at 80% 80%, rgba(67,233,123,0.07) 0%, transparent 70%);
     pointer-events: none; z-index: 0;
+  }
+
+  /* ── Sidebar overlay ── */
+  .sidebar-overlay {
+    position: fixed; inset: 0; z-index: 150;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(3px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .sidebar-overlay.show { opacity: 1; pointer-events: all; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    z-index: 160;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-header {
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.1rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .sidebar-logo-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .btn-close-sidebar {
+    background: none; border: none;
+    color: var(--muted); font-size: 20px;
+    cursor: pointer; padding: 4px;
+    line-height: 1; border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .btn-close-sidebar:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+  /* ── Sidebar nav tabs ── */
+  .sidebar-nav {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .sidebar-tab {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    cursor: pointer; font-size: 0.88rem; font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    color: var(--muted);
+    border: none; background: none; width: 100%; text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sidebar-tab:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+  .sidebar-tab.active {
+    background: rgba(108,99,255,0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(108,99,255,0.25);
+  }
+  .sidebar-tab-icon { font-size: 16px; flex-shrink: 0; }
+
+  /* ── Sidebar content panels ── */
+  .sidebar-panel { display: none; flex: 1; overflow-y: auto; flex-direction: column; }
+  .sidebar-panel.active { display: flex; }
+
+  /* Panel: Materias lista */
+  .sidebar-materias-list { padding: 10px; flex: 1; }
+  .sidebar-materia-item {
+    padding: 10px 12px; border-radius: 10px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sidebar-materia-item:hover { background: rgba(255,255,255,0.04); }
+  .sidebar-materia-nombre { font-size: 0.82rem; font-weight: 500; }
+  .sidebar-materia-nota { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; }
+
+  /* Panel: Horario */
+  .sidebar-horario-wrap { padding: 10px; flex: 1; }
+  .horario-title {
+    font-family: 'Syne', sans-serif; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); margin-bottom: 10px; padding: 0 2px;
+  }
+  .horario-day { margin-bottom: 10px; }
+  .horario-day-label {
+    font-size: 0.72rem; font-weight: 600; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .horario-slot {
+    background: var(--surface2); border-radius: 8px;
+    padding: 8px 10px; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+    position: relative;
+  }
+  .horario-slot-color {
+    width: 3px; height: 30px; border-radius: 2px; flex-shrink: 0;
+  }
+  .horario-slot-info { flex: 1; }
+  .horario-slot-materia { font-size: 0.8rem; font-weight: 500; }
+  .horario-slot-hora { font-size: 0.7rem; color: var(--muted); }
+  .horario-slot-aula { font-size: 0.68rem; color: var(--muted); font-style: italic; }
+  .btn-del-slot {
+    background: none; border: none; color: var(--muted);
+    font-size: 12px; cursor: pointer; padding: 2px 4px;
+    border-radius: 4px; transition: color 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-del-slot:hover { color: var(--accent2); }
+  .btn-add-slot {
+    width: 100%; padding: 8px;
+    background: rgba(108,99,255,0.07);
+    border: 1px dashed rgba(108,99,255,0.25);
+    border-radius: 8px; color: var(--accent);
+    font-size: 0.78rem; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+    margin-top: 4px;
+  }
+  .btn-add-slot:hover { background: rgba(108,99,255,0.13); }
+  .no-horario {
+    text-align: center; padding: 20px 10px;
+    color: var(--muted); font-size: 0.8rem; font-style: italic;
   }
 
   /* ── Header ── */
@@ -55,6 +200,20 @@
     padding: 14px 20px;
     display: flex; align-items: center; justify-content: space-between;
   }
+
+  .header-left { display: flex; align-items: center; gap: 12px; }
+
+  .btn-menu {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--text); cursor: pointer;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: background 0.15s;
+  }
+  .btn-menu:active { background: rgba(255,255,255,0.1); }
 
   .logo {
     font-family: 'Syne', sans-serif;
@@ -90,7 +249,7 @@
     max-width: 600px; margin: 0 auto;
   }
 
-  /* ── Ponderado global ── */
+  /* ── Promedio card ── */
   .ponderado-card {
     background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(67,233,123,0.1));
     border: 1px solid rgba(108,99,255,0.3);
@@ -178,6 +337,7 @@
   }
 
   .badge-accent { background: rgba(108,99,255,0.15); border-color: rgba(108,99,255,0.3); color: #a78bfa; }
+  .badge-sin-creditos { background: rgba(247,183,49,0.1); border-color: rgba(247,183,49,0.25); color: var(--accent4); }
 
   .materia-nota-actual {
     text-align: right;
@@ -408,6 +568,37 @@
 
   .btn-confirm:active { transform: scale(0.97); opacity: 0.9; }
 
+  /* ── Modal semestre ── */
+  .semestre-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 16px;
+  }
+  .semestre-option {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px;
+    text-align: center; cursor: pointer;
+    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 600;
+    transition: all 0.15s; color: var(--muted);
+  }
+  .semestre-option:hover { border-color: rgba(108,99,255,0.4); color: var(--text); }
+  .semestre-option.selected { background: rgba(108,99,255,0.15); border-color: var(--accent); color: #a78bfa; }
+  .semestre-custom {
+    grid-column: 1 / -1;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .semestre-custom input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px;
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem; outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .semestre-custom input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,0.12); }
+  .semestre-hint { font-size: 0.72rem; color: var(--muted); margin-top: -8px; margin-bottom: 4px; }
+
   /* ── Toast ── */
   .toast {
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
@@ -502,15 +693,68 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(108,99,255,0.3); border-radius: 2px; }
+
+  /* ── Horario modal ── */
+  .overlay-horario { z-index: 210; }
+  .color-picker { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .color-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    cursor: pointer; border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .color-dot.selected { border-color: white; transform: scale(1.15); }
 </style>
 </head>
 <body>
 
+<!-- Sidebar overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">📚</div>
+      NotaUDES
+    </div>
+    <button class="btn-close-sidebar" onclick="cerrarSidebar()">×</button>
+  </div>
+
+  <!-- Nav tabs -->
+  <div class="sidebar-nav">
+    <button class="sidebar-tab active" id="tabMaterias" onclick="showSidebarPanel('materias')">
+      <span class="sidebar-tab-icon">📋</span> Mis materias
+    </button>
+    <button class="sidebar-tab" id="tabHorario" onclick="showSidebarPanel('horario')">
+      <span class="sidebar-tab-icon">🗓️</span> Horario
+    </button>
+  </div>
+
+  <!-- Panel: materias -->
+  <div class="sidebar-panel active" id="panelMaterias">
+    <div class="sidebar-materias-list" id="sidebarMateriasList">
+      <div class="no-horario">Sin materias registradas</div>
+    </div>
+  </div>
+
+  <!-- Panel: horario -->
+  <div class="sidebar-panel" id="panelHorario">
+    <div class="sidebar-horario-wrap">
+      <div class="horario-title">Horario semanal</div>
+      <div id="horarioContent"></div>
+      <button class="btn-add-slot" onclick="abrirModalHorario()">＋ Agregar clase</button>
+    </div>
+  </div>
+</div>
+
 <!-- Header -->
 <header>
-  <div class="logo">
-    <div class="logo-icon">📚</div>
-    NotaUDES
+  <div class="header-left">
+    <button class="btn-menu" onclick="abrirSidebar()">☰</button>
+    <div class="logo">
+      <div class="logo-icon">📚</div>
+      NotaUDES
+    </div>
   </div>
   <button class="btn-add-materia" onclick="abrirModalMateria()">
     <span style="font-size:16px">+</span> Materia
@@ -530,12 +774,12 @@
     <button class="btn-close-banner" onclick="document.getElementById('installBanner').style.display='none'">×</button>
   </div>
 
-  <!-- Ponderado global -->
+  <!-- Promedio global -->
   <div class="ponderado-card" id="ponderadoCard" style="display:none">
     <div class="ponderado-info">
-      <h3>Ponderado semestral</h3>
+      <h3>Promedio definitivo</h3>
       <div class="ponderado-valor" id="ponderadoValor">0.0</div>
-      <div class="ponderado-sub" id="ponderadoSub">0 créditos registrados</div>
+      <div class="ponderado-sub" id="ponderadoSub">calculando…</div>
     </div>
     <div class="ponderado-ring">
       <svg width="72" height="72" viewBox="0 0 72 72">
@@ -572,22 +816,18 @@
       <label>Nombre de la materia</label>
       <input type="text" id="inputNombreMateria" placeholder="Ej: Cálculo Multivariable"/>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Semestre</label>
-        <select id="inputSemestre">
-          <option value="">Selecciona</option>
-          <option>2025-1</option>
-          <option>2025-2</option>
-          <option>2026-1</option>
-          <option>2026-2</option>
-          <option>Otro</option>
-        </select>
+    <div class="form-group">
+      <label>Semestre</label>
+      <div class="semestre-grid" id="semestreGrid"></div>
+      <div class="semestre-hint">¿No está tu semestre? Escríbelo abajo</div>
+      <div class="semestre-custom">
+        <input type="text" id="inputSemestreCustom" placeholder="Ej: 2027-1, Intercambio…"/>
       </div>
-      <div class="form-group">
-        <label>Créditos</label>
-        <input type="number" id="inputCreditos" placeholder="3" min="1" max="10"/>
-      </div>
+      <input type="hidden" id="inputSemestre"/>
+    </div>
+    <div class="form-group">
+      <label>Créditos <span style="color:var(--muted);font-weight:400;text-transform:none">(0 = sin créditos / no cuenta en promedio)</span></label>
+      <input type="number" id="inputCreditos" placeholder="3" min="0" max="10"/>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="cerrarModal('overlayMateria')">Cancelar</button>
@@ -622,25 +862,89 @@
   </div>
 </div>
 
+<!-- Modal Horario -->
+<div class="overlay overlay-horario" id="overlayHorario">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🗓️ Agregar clase al horario</div>
+    <div class="form-group">
+      <label>Materia</label>
+      <select id="inputHorarioMateria">
+        <option value="">Selecciona una materia</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Día</label>
+        <select id="inputHorarioDia">
+          <option value="">Día</option>
+          <option>Lunes</option>
+          <option>Martes</option>
+          <option>Miércoles</option>
+          <option>Jueves</option>
+          <option>Viernes</option>
+          <option>Sábado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Hora inicio</label>
+        <input type="time" id="inputHorarioHoraInicio"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hora fin</label>
+        <input type="time" id="inputHorarioHoraFin"/>
+      </div>
+      <div class="form-group">
+        <label>Aula (opcional)</label>
+        <input type="text" id="inputHorarioAula" placeholder="Ej: 301-B"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Color</label>
+      <div class="color-picker" id="colorPicker"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="cerrarModal('overlayHorario')">Cancelar</button>
+      <button class="btn-confirm" onclick="guardarHorario()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
 // ── Estado ──
-let db = JSON.parse(localStorage.getItem('notaudes_db') || '{"materias":[]}');
+let db = JSON.parse(localStorage.getItem('notaudes_db') || '{"materias":[],"horario":[]}');
+if (!db.horario) db.horario = [];
 let materiaActualId = null;
 let deferredPrompt = null;
+let selectedColor = '#6c63ff';
+
+const COLORS = ['#6c63ff','#ff6b6b','#43e97b','#f7b731','#38bdf8','#f472b6','#fb923c','#a78bfa'];
+const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+// Semestres dinámicos: genera desde 2025-1 hasta 2 años futuros desde hoy
+function getSemestres() {
+  const base = [];
+  const now = new Date();
+  const yearNow = now.getFullYear();
+  for (let y = 2025; y <= yearNow + 3; y++) {
+    base.push(`${y}-1`, `${y}-2`);
+  }
+  return base;
+}
 
 function save() {
   localStorage.setItem('notaudes_db', JSON.stringify(db));
 }
 
-// ── IDs ──
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 }
 
-// ── Colores de nota ──
 function colorNota(n) {
   if (n === null) return 'nota-gris';
   if (n >= 3.5) return 'nota-verde';
@@ -651,7 +955,7 @@ function colorNota(n) {
 // ── Cálculos ──
 function calcularMateria(materia) {
   const cortes = materia.cortes || [];
-  if (!cortes.length) return { notaActual: null, pctUsado: 0, notaNecesaria: null };
+  if (!cortes.length) return { notaActual: null, pctUsado: 0, notaNecesaria: null, pctRestante: 100, notaAcumulada: '0.00' };
 
   let notaAcumulada = 0;
   let pctUsado = 0;
@@ -664,7 +968,6 @@ function calcularMateria(materia) {
   const pctRestante = 100 - pctUsado;
   let notaNecesaria = null;
   if (pctRestante > 0) {
-    // Cuánto necesito sacar en lo que queda para aprobar con 3.0
     const meta = 3.0;
     notaNecesaria = ((meta - notaAcumulada) / pctRestante) * 100;
     notaNecesaria = Math.max(0, Math.min(5, notaNecesaria));
@@ -679,22 +982,43 @@ function calcularMateria(materia) {
   };
 }
 
-function calcularPonderado() {
+// ── Promedio definitivo ──
+// Lógica:
+// - Materias CON créditos (>0): se incluyen en el promedio ponderado por créditos
+// - Materias SIN créditos (0): tienen su nota individual pero NO afectan el promedio ponderado
+//   (ej: electivas deportivas, práctica social, etc.)
+// El promedio que se muestra es la nota ponderada sobre el porcentaje ya evaluado de cada materia,
+// dando una estimación en tiempo real de cómo van las notas actuales.
+function calcularPromedio() {
   const materias = db.materias;
   if (!materias.length) return null;
 
   let sumaPonderada = 0, totalCreditos = 0;
+  let materiasConNota = 0, materiasSinCreditos = 0;
+
   materias.forEach(m => {
-    const { notaAcumulada, pctUsado } = calcularMateria(m);
-    if (pctUsado > 0) {
-      const notaReal = parseFloat(notaAcumulada);
-      sumaPonderada += notaReal * m.creditos;
-      totalCreditos += m.creditos;
+    const { notaActual, pctUsado } = calcularMateria(m);
+    if (pctUsado === 0) return; // sin notas aún, no cuenta
+
+    const creditos = parseInt(m.creditos) || 0;
+    if (creditos === 0) {
+      materiasSinCreditos++;
+      return; // excluye del ponderado
     }
+
+    const notaVal = parseFloat(notaActual);
+    sumaPonderada += notaVal * creditos;
+    totalCreditos += creditos;
+    materiasConNota++;
   });
 
   if (!totalCreditos) return null;
-  return { valor: (sumaPonderada / totalCreditos).toFixed(2), creditos: totalCreditos };
+  return {
+    valor: (sumaPonderada / totalCreditos).toFixed(2),
+    creditos: totalCreditos,
+    materias: materiasConNota,
+    sinCreditos: materiasSinCreditos
+  };
 }
 
 // ── Render ──
@@ -708,17 +1032,21 @@ function render() {
   if (!db.materias.length) {
     empty.style.display = 'block';
     pCard.style.display = 'none';
+    renderSidebarMaterias();
+    renderHorario();
     return;
   }
 
   empty.style.display = 'none';
 
-  // Ponderado
-  const pond = calcularPonderado();
+  // Promedio
+  const pond = calcularPromedio();
   if (pond) {
     pCard.style.display = 'flex';
     document.getElementById('ponderadoValor').textContent = pond.valor;
-    document.getElementById('ponderadoSub').textContent = `${pond.creditos} crédito${pond.creditos !== 1 ? 's' : ''} con nota`;
+    let sub = `${pond.creditos} crédito${pond.creditos !== 1 ? 's' : ''} · ${pond.materias} materia${pond.materias !== 1 ? 's' : ''}`;
+    if (pond.sinCreditos > 0) sub += ` · +${pond.sinCreditos} sin créditos`;
+    document.getElementById('ponderadoSub').textContent = sub;
     const pct = (parseFloat(pond.valor) / 5) * 100;
     const circum = 188;
     document.getElementById('ringFill').style.strokeDashoffset = circum - (circum * pct / 100);
@@ -736,8 +1064,9 @@ function render() {
 
     const notaColor = calc.notaActual !== null ? colorNota(parseFloat(calc.notaActual)) : 'nota-gris';
     const notaDisplay = calc.notaActual !== null ? calc.notaActual : '–';
+    const creditos = parseInt(m.creditos) || 0;
 
-    // Banner de nota necesaria
+    // Banner
     let bannerHtml = '';
     if (calc.notaNecesaria !== null && calc.pctRestante > 0) {
       const nn = parseFloat(calc.notaNecesaria);
@@ -760,7 +1089,6 @@ function render() {
     // Cortes
     let cortesHtml = '';
     if (m.cortes && m.cortes.length) {
-      // Barra de porcentaje restante
       cortesHtml += `
         <div class="pct-restante">
           <span>${calc.pctUsado}% evaluado</span>
@@ -793,13 +1121,17 @@ function render() {
       cortesHtml = '<div class="no-cortes">Sin notas registradas aún</div>';
     }
 
+    const creditosBadge = creditos === 0
+      ? `<span class="badge badge-sin-creditos">sin créditos</span>`
+      : `<span class="badge badge-accent">${creditos} crédito${creditos !== 1 ? 's' : ''}</span>`;
+
     card.innerHTML = `
       <div class="materia-header" onclick="toggleCard('${m.id}')">
         <div class="materia-left">
           <div class="materia-nombre">${m.nombre}</div>
           <div class="materia-meta">
             <span class="badge">${m.semestre}</span>
-            <span class="badge badge-accent">${m.creditos} crédito${m.creditos !== 1 ? 's' : ''}</span>
+            ${creditosBadge}
             ${m.cortes.length ? `<span class="badge">${m.cortes.length} corte${m.cortes.length !== 1 ? 's' : ''}</span>` : ''}
           </div>
         </div>
@@ -823,6 +1155,109 @@ function render() {
 
     container.appendChild(card);
   });
+
+  renderSidebarMaterias();
+  renderHorario();
+}
+
+// ── Sidebar: lista de materias ──
+function renderSidebarMaterias() {
+  const el = document.getElementById('sidebarMateriasList');
+  if (!db.materias.length) {
+    el.innerHTML = '<div class="no-horario">Sin materias registradas</div>';
+    return;
+  }
+  el.innerHTML = db.materias.map(m => {
+    const calc = calcularMateria(m);
+    const nota = calc.notaActual || '–';
+    const cls = calc.notaActual ? colorNota(parseFloat(calc.notaActual)) : 'nota-gris';
+    return `<div class="sidebar-materia-item" onclick="irAMateria('${m.id}')">
+      <div>
+        <div class="sidebar-materia-nombre">${m.nombre}</div>
+        <div style="font-size:0.7rem;color:var(--muted)">${m.semestre}${parseInt(m.creditos)===0?' · sin créditos':' · '+m.creditos+' cred.'}</div>
+      </div>
+      <div class="sidebar-materia-nota ${cls}">${nota}</div>
+    </div>`;
+  }).join('');
+}
+
+function irAMateria(id) {
+  cerrarSidebar();
+  setTimeout(() => {
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const body = document.getElementById(`body-${id}`);
+      const chev = document.getElementById(`chev-${id}`);
+      if (body && !body.classList.contains('open')) {
+        body.classList.add('open');
+        chev.classList.add('open');
+      }
+    }
+  }, 350);
+}
+
+// ── Horario ──
+function renderHorario() {
+  const el = document.getElementById('horarioContent');
+  if (!db.horario.length) {
+    el.innerHTML = '<div class="no-horario">Sin clases en el horario</div>';
+    return;
+  }
+
+  // Agrupar por día
+  const byDia = {};
+  DIAS.forEach(d => { byDia[d] = []; });
+  db.horario.forEach(h => {
+    if (byDia[h.dia]) byDia[h.dia].push(h);
+  });
+
+  let html = '';
+  DIAS.forEach(dia => {
+    const slots = byDia[dia];
+    if (!slots.length) return;
+    slots.sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
+    html += `<div class="horario-day"><div class="horario-day-label">${dia}</div>`;
+    slots.forEach(s => {
+      html += `<div class="horario-slot">
+        <div class="horario-slot-color" style="background:${s.color}"></div>
+        <div class="horario-slot-info">
+          <div class="horario-slot-materia">${s.materia}</div>
+          <div class="horario-slot-hora">${s.horaInicio} – ${s.horaFin}</div>
+          ${s.aula ? `<div class="horario-slot-aula">📍 ${s.aula}</div>` : ''}
+        </div>
+        <button class="btn-del-slot" onclick="eliminarSlot('${s.id}')">✕</button>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  el.innerHTML = html || '<div class="no-horario">Sin clases en el horario</div>';
+}
+
+function eliminarSlot(id) {
+  db.horario = db.horario.filter(h => h.id !== id);
+  save(); renderHorario();
+  toast('Clase eliminada del horario');
+}
+
+// ── Sidebar ──
+function abrirSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function showSidebarPanel(panel) {
+  document.querySelectorAll('.sidebar-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel' + panel.charAt(0).toUpperCase() + panel.slice(1)).classList.add('active');
+  document.getElementById('tab' + panel.charAt(0).toUpperCase() + panel.slice(1)).classList.add('active');
 }
 
 // ── Toggle card ──
@@ -844,10 +1279,44 @@ function cerrarModal(id) {
   document.body.style.overflow = '';
 }
 
+// ── Modal Materia ──
+function buildSemestreGrid() {
+  const grid = document.getElementById('semestreGrid');
+  const hidden = document.getElementById('inputSemestre');
+  const custom = document.getElementById('inputSemestreCustom');
+  const semestres = getSemestres();
+
+  grid.innerHTML = semestres.map(s =>
+    `<div class="semestre-option" data-val="${s}" onclick="selectSemestre('${s}')">${s}</div>`
+  ).join('');
+
+  // Reset
+  hidden.value = '';
+  custom.value = '';
+  grid.querySelectorAll('.semestre-option').forEach(o => o.classList.remove('selected'));
+
+  custom.addEventListener('input', () => {
+    if (custom.value.trim()) {
+      hidden.value = custom.value.trim();
+      grid.querySelectorAll('.semestre-option').forEach(o => o.classList.remove('selected'));
+    } else {
+      hidden.value = '';
+    }
+  });
+}
+
+function selectSemestre(val) {
+  document.getElementById('inputSemestre').value = val;
+  document.getElementById('inputSemestreCustom').value = '';
+  document.querySelectorAll('.semestre-option').forEach(o => {
+    o.classList.toggle('selected', o.dataset.val === val);
+  });
+}
+
 function abrirModalMateria() {
   document.getElementById('inputNombreMateria').value = '';
-  document.getElementById('inputSemestre').value = '';
   document.getElementById('inputCreditos').value = '';
+  buildSemestreGrid();
   abrirModal('overlayMateria');
   setTimeout(() => document.getElementById('inputNombreMateria').focus(), 300);
 }
@@ -861,15 +1330,74 @@ function abrirModalCorte(materiaId) {
   setTimeout(() => document.getElementById('inputNombreCorte').focus(), 300);
 }
 
+// ── Modal Horario ──
+function buildColorPicker() {
+  const el = document.getElementById('colorPicker');
+  selectedColor = COLORS[0];
+  el.innerHTML = COLORS.map(c =>
+    `<div class="color-dot ${c === selectedColor ? 'selected' : ''}" style="background:${c}" data-color="${c}" onclick="selectColor('${c}')"></div>`
+  ).join('');
+}
+
+function selectColor(c) {
+  selectedColor = c;
+  document.querySelectorAll('.color-dot').forEach(d => {
+    d.classList.toggle('selected', d.dataset.color === c);
+  });
+}
+
+function abrirModalHorario() {
+  // Poblar select de materias
+  const sel = document.getElementById('inputHorarioMateria');
+  sel.innerHTML = '<option value="">Selecciona una materia</option>';
+  db.materias.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.nombre;
+    opt.textContent = m.nombre;
+    sel.appendChild(opt);
+  });
+  // También permitir texto libre (si no hay materias registradas)
+  if (!db.materias.length) {
+    sel.innerHTML = '<option value="">— Sin materias registradas —</option>';
+  }
+
+  document.getElementById('inputHorarioDia').value = '';
+  document.getElementById('inputHorarioHoraInicio').value = '';
+  document.getElementById('inputHorarioHoraFin').value = '';
+  document.getElementById('inputHorarioAula').value = '';
+  buildColorPicker();
+  abrirModal('overlayHorario');
+}
+
+function guardarHorario() {
+  const materia = document.getElementById('inputHorarioMateria').value.trim();
+  const dia = document.getElementById('inputHorarioDia').value;
+  const horaInicio = document.getElementById('inputHorarioHoraInicio').value;
+  const horaFin = document.getElementById('inputHorarioHoraFin').value;
+  const aula = document.getElementById('inputHorarioAula').value.trim();
+
+  if (!materia) { toast('Selecciona o escribe la materia'); return; }
+  if (!dia) { toast('Selecciona el día'); return; }
+  if (!horaInicio || !horaFin) { toast('Ingresa la hora de inicio y fin'); return; }
+  if (horaFin <= horaInicio) { toast('La hora de fin debe ser mayor a la de inicio'); return; }
+
+  db.horario.push({ id: uid(), materia, dia, horaInicio, horaFin, aula, color: selectedColor });
+  save();
+  cerrarModal('overlayHorario');
+  renderHorario();
+  toast('🗓️ Clase agregada al horario');
+}
+
 // ── Guardar materia ──
 function guardarMateria() {
   const nombre = document.getElementById('inputNombreMateria').value.trim();
   const semestre = document.getElementById('inputSemestre').value.trim();
-  const creditos = parseInt(document.getElementById('inputCreditos').value);
+  const creditosRaw = document.getElementById('inputCreditos').value;
+  const creditos = creditosRaw === '' ? null : parseInt(creditosRaw);
 
   if (!nombre) { toast('Escribe el nombre de la materia'); return; }
-  if (!semestre) { toast('Selecciona el semestre'); return; }
-  if (!creditos || creditos < 1) { toast('Ingresa los créditos válidos'); return; }
+  if (!semestre) { toast('Selecciona o escribe el semestre'); return; }
+  if (creditos === null || isNaN(creditos) || creditos < 0) { toast('Ingresa los créditos (0 o más)'); return; }
 
   db.materias.push({ id: uid(), nombre, semestre, creditos, cortes: [] });
   save(); render();
@@ -900,7 +1428,6 @@ function guardarCorte() {
   save(); render();
   cerrarModal('overlayCorte');
 
-  // Abrir el card automáticamente
   setTimeout(() => {
     const body = document.getElementById(`body-${materiaActualId}`);
     const chev = document.getElementById(`chev-${materiaActualId}`);
@@ -920,7 +1447,6 @@ function eliminarCorte(materiaId, corteId) {
   materia.cortes = materia.cortes.filter(c => c.id !== corteId);
   save(); render();
 
-  // Reabrir card
   setTimeout(() => {
     const body = document.getElementById(`body-${materiaId}`);
     const chev = document.getElementById(`chev-${materiaId}`);
@@ -947,7 +1473,7 @@ function toast(msg) {
 }
 
 // ── Cerrar modal al tocar overlay ──
-['overlayMateria','overlayCorte'].forEach(id => {
+['overlayMateria','overlayCorte','overlayHorario'].forEach(id => {
   document.getElementById(id).addEventListener('click', e => {
     if (e.target.id === id) cerrarModal(id);
   });
