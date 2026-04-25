@@ -26,728 +26,184 @@
     --shadow: 0 8px 32px rgba(0,0,0,0.4);
     --sidebar-w: 260px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100dvh;
-    overflow-x: hidden;
-  }
-
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100dvh; overflow-x: hidden; }
   body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(108,99,255,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 30% at 80% 80%, rgba(67,233,123,0.07) 0%, transparent 70%);
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 20% 10%, rgba(108,99,255,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 30% at 80% 80%, rgba(67,233,123,0.07) 0%, transparent 70%);
     pointer-events: none; z-index: 0;
   }
-
-  /* ── Sidebar overlay ── */
   .sidebar-overlay {
     position: fixed; inset: 0; z-index: 150;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(3px);
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
   }
   .sidebar-overlay.show { opacity: 1; pointer-events: all; }
-
-  /* ── Sidebar ── */
   .sidebar {
-    position: fixed; top: 0; left: 0; bottom: 0;
-    width: var(--sidebar-w);
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    z-index: 160;
-    transform: translateX(-100%);
+    position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w);
+    background: var(--surface); border-right: 1px solid var(--border);
+    z-index: 160; transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-    display: flex; flex-direction: column;
-    overflow: hidden;
+    display: flex; flex-direction: column; overflow: hidden;
   }
   .sidebar.open { transform: translateX(0); }
-
   .sidebar-header {
-    padding: 20px 16px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
+    padding: 20px 16px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
   }
-
-  .sidebar-logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 1.1rem;
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .sidebar-logo-icon {
-    width: 28px; height: 28px;
-    background: linear-gradient(135deg, var(--accent), #a78bfa);
-    border-radius: 7px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
-
-  .btn-close-sidebar {
-    background: none; border: none;
-    color: var(--muted); font-size: 20px;
-    cursor: pointer; padding: 4px;
-    line-height: 1; border-radius: 6px;
-    transition: color 0.15s, background 0.15s;
-  }
+  .sidebar-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+  .sidebar-logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg, var(--accent), #a78bfa); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .btn-close-sidebar { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px; line-height: 1; border-radius: 6px; transition: color 0.15s, background 0.15s; }
   .btn-close-sidebar:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-
-  /* ── Sidebar nav tabs ── */
-  .sidebar-nav {
-    display: flex; flex-direction: column; gap: 4px;
-    padding: 12px 10px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .sidebar-tab {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px; border-radius: 10px;
-    cursor: pointer; font-size: 0.88rem; font-weight: 500;
-    transition: background 0.15s, color 0.15s;
-    color: var(--muted);
-    border: none; background: none; width: 100%; text-align: left;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .sidebar-tab:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-  .sidebar-tab.active {
-    background: rgba(108,99,255,0.15);
-    color: #a78bfa;
-    border: 1px solid rgba(108,99,255,0.25);
-  }
-  .sidebar-tab-icon { font-size: 16px; flex-shrink: 0; }
-
-  /* ── Sidebar content panels ── */
-  .sidebar-panel { display: none; flex: 1; overflow-y: auto; flex-direction: column; }
-  .sidebar-panel.active { display: flex; }
-
-  /* Panel: Materias lista */
-  .sidebar-materias-list { padding: 10px; flex: 1; }
-  .sidebar-materia-item {
-    padding: 10px 12px; border-radius: 10px;
-    margin-bottom: 4px;
-    cursor: pointer;
-    transition: background 0.15s;
-    display: flex; align-items: center; justify-content: space-between;
-  }
+  .sidebar-section-label { font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 14px 16px 6px; flex-shrink: 0; }
+  .sidebar-materias-list { padding: 6px 10px; flex: 1; overflow-y: auto; }
+  .sidebar-materia-item { padding: 10px 12px; border-radius: 10px; margin-bottom: 4px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: space-between; }
   .sidebar-materia-item:hover { background: rgba(255,255,255,0.04); }
   .sidebar-materia-nombre { font-size: 0.82rem; font-weight: 500; }
   .sidebar-materia-nota { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; }
-
-  /* Panel: Horario */
-  .sidebar-horario-wrap { padding: 10px; flex: 1; }
-  .horario-title {
-    font-family: 'Syne', sans-serif; font-size: 0.75rem;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--muted); margin-bottom: 10px; padding: 0 2px;
+  .sidebar-empty { text-align: center; padding: 24px 10px; color: var(--muted); font-size: 0.8rem; font-style: italic; }
+  .sidebar-footer { padding: 12px 14px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+  .btn-reiniciar {
+    width: 100%; padding: 12px;
+    background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2);
+    border-radius: 12px; color: var(--accent2);
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s, border-color 0.15s;
   }
-  .horario-day { margin-bottom: 10px; }
-  .horario-day-label {
-    font-size: 0.72rem; font-weight: 600; color: var(--accent);
-    text-transform: uppercase; letter-spacing: 0.06em;
-    margin-bottom: 4px;
-  }
-  .horario-slot {
-    background: var(--surface2); border-radius: 8px;
-    padding: 8px 10px; margin-bottom: 4px;
-    display: flex; align-items: center; gap: 8px;
-    position: relative;
-  }
-  .horario-slot-color {
-    width: 3px; height: 30px; border-radius: 2px; flex-shrink: 0;
-  }
-  .horario-slot-info { flex: 1; }
-  .horario-slot-materia { font-size: 0.8rem; font-weight: 500; }
-  .horario-slot-hora { font-size: 0.7rem; color: var(--muted); }
-  .horario-slot-aula { font-size: 0.68rem; color: var(--muted); font-style: italic; }
-  .btn-del-slot {
-    background: none; border: none; color: var(--muted);
-    font-size: 12px; cursor: pointer; padding: 2px 4px;
-    border-radius: 4px; transition: color 0.15s;
-    flex-shrink: 0;
-  }
-  .btn-del-slot:hover { color: var(--accent2); }
-  .btn-add-slot {
-    width: 100%; padding: 8px;
-    background: rgba(108,99,255,0.07);
-    border: 1px dashed rgba(108,99,255,0.25);
-    border-radius: 8px; color: var(--accent);
-    font-size: 0.78rem; cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.15s;
-    margin-top: 4px;
-  }
-  .btn-add-slot:hover { background: rgba(108,99,255,0.13); }
-  .no-horario {
-    text-align: center; padding: 20px 10px;
-    color: var(--muted); font-size: 0.8rem; font-style: italic;
-  }
-
-  /* ── Header ── */
+  .btn-reiniciar:hover { background: rgba(255,107,107,0.15); border-color: rgba(255,107,107,0.35); }
+  .btn-reiniciar:active { background: rgba(255,107,107,0.2); }
   header {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(7,9,15,0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 20px;
+    background: rgba(7,9,15,0.85); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border); padding: 14px 20px;
     display: flex; align-items: center; justify-content: space-between;
   }
-
   .header-left { display: flex; align-items: center; gap: 12px; }
-
-  .btn-menu {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    color: var(--text); cursor: pointer;
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    transition: background 0.15s;
-  }
+  .btn-menu { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); cursor: pointer; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.15s; }
   .btn-menu:active { background: rgba(255,255,255,0.1); }
-
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 1.3rem;
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .logo-icon {
-    width: 32px; height: 32px;
-    background: linear-gradient(135deg, var(--accent), #a78bfa);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-  }
-
-  .btn-add-materia {
-    background: linear-gradient(135deg, var(--accent), #a78bfa);
-    color: white; border: none; cursor: pointer;
-    padding: 8px 16px; border-radius: 20px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500; font-size: 0.85rem;
-    display: flex; align-items: center; gap: 6px;
-    transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 4px 16px rgba(108,99,255,0.3);
-  }
-
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
+  .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), #a78bfa); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .btn-add-materia { background: linear-gradient(135deg, var(--accent), #a78bfa); color: white; border: none; cursor: pointer; padding: 8px 16px; border-radius: 20px; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; transition: transform 0.15s; box-shadow: 0 4px 16px rgba(108,99,255,0.3); }
   .btn-add-materia:active { transform: scale(0.95); }
-
-  /* ── Contenido ── */
-  main {
-    position: relative; z-index: 1;
-    padding: 20px 16px 100px;
-    max-width: 600px; margin: 0 auto;
-  }
-
-  /* ── Promedio card ── */
-  .ponderado-card {
-    background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(67,233,123,0.1));
-    border: 1px solid rgba(108,99,255,0.3);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 24px;
-    display: flex; align-items: center; justify-content: space-between;
-    animation: slideDown 0.4s ease;
-  }
-
-  .ponderado-info h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.75rem; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--muted);
-    margin-bottom: 4px;
-  }
-
-  .ponderado-valor {
-    font-family: 'Syne', sans-serif;
-    font-size: 2.4rem; font-weight: 800;
-    background: linear-gradient(135deg, #a78bfa, var(--accent3));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
+  main { position: relative; z-index: 1; padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; }
+  .ponderado-card { background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(67,233,123,0.1)); border: 1px solid rgba(108,99,255,0.3); border-radius: var(--radius); padding: 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; animation: slideDown 0.4s ease; }
+  .ponderado-info h3 { font-family: 'Syne', sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .ponderado-valor { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, #a78bfa, var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .ponderado-sub { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-
-  .ponderado-ring {
-    width: 72px; height: 72px;
-    position: relative;
-  }
-
+  .ponderado-ring { width: 72px; height: 72px; position: relative; }
   .ponderado-ring svg { transform: rotate(-90deg); }
   .ring-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 6; }
-  .ring-fill {
-    fill: none; stroke: url(#ringGrad); stroke-width: 6;
-    stroke-linecap: round;
-    stroke-dasharray: 188;
-    transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .ring-text {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
-  }
-
-  /* ── Materia card ── */
-  .materia-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 16px;
-    overflow: hidden;
-    transition: box-shadow 0.2s;
-    animation: slideUp 0.3s ease;
-  }
-
+  .ring-fill { fill: none; stroke: url(#ringGrad); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 188; transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
+  .materia-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; transition: box-shadow 0.2s; animation: slideUp 0.3s ease; }
   .materia-card:hover { box-shadow: 0 8px 32px rgba(108,99,255,0.12); }
-
-  .materia-header {
-    padding: 16px 16px 12px;
-    display: flex; align-items: flex-start; justify-content: space-between;
-    cursor: pointer;
-  }
-
+  .materia-header { padding: 16px 16px 12px; display: flex; align-items: flex-start; justify-content: space-between; cursor: pointer; }
   .materia-left { flex: 1; }
-
-  .materia-nombre {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: 1rem;
-    margin-bottom: 4px;
-  }
-
-  .materia-meta {
-    display: flex; gap: 8px; flex-wrap: wrap;
-  }
-
-  .badge {
-    font-size: 0.7rem; padding: 2px 8px;
-    border-radius: 20px; font-weight: 500;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: var(--muted);
-  }
-
+  .materia-nombre { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .materia-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; font-weight: 500; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--muted); }
   .badge-accent { background: rgba(108,99,255,0.15); border-color: rgba(108,99,255,0.3); color: #a78bfa; }
   .badge-sin-creditos { background: rgba(247,183,49,0.1); border-color: rgba(247,183,49,0.25); color: var(--accent4); }
-
-  .materia-nota-actual {
-    text-align: right;
-    flex-shrink: 0; margin-left: 12px;
-  }
-
-  .nota-grande {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 1.6rem;
-    line-height: 1;
-  }
-
+  .materia-nota-actual { text-align: right; flex-shrink: 0; margin-left: 12px; }
+  .nota-grande { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; line-height: 1; }
   .nota-label { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
-
   .nota-verde { color: var(--accent3); }
   .nota-amarilla { color: var(--accent4); }
   .nota-roja { color: var(--accent2); }
   .nota-gris { color: var(--muted); }
-
-  /* ── Cortes ── */
-  .materia-body {
-    padding: 0 16px 16px;
-    display: none;
-  }
-
+  .chevron { font-size: 14px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; margin-left: 8px; margin-top: 4px; }
+  .chevron.open { transform: rotate(180deg); }
+  .materia-body { padding: 0 16px 16px; display: none; }
   .materia-body.open { display: block; }
-
-  .necesitas-banner {
-    background: linear-gradient(90deg, rgba(247,183,49,0.1), transparent);
-    border-left: 3px solid var(--accent4);
-    border-radius: 0 8px 8px 0;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-    font-size: 0.85rem;
-  }
-
+  .necesitas-banner { background: linear-gradient(90deg, rgba(247,183,49,0.1), transparent); border-left: 3px solid var(--accent4); border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 12px; font-size: 0.85rem; }
   .necesitas-banner strong { color: var(--accent4); font-family: 'Syne', sans-serif; }
-
   .cortes-grid { display: flex; flex-direction: column; gap: 8px; }
-
-  .corte-item {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 10px 12px;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 8px;
-  }
-
+  .corte-item { background: var(--surface2); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .corte-left { flex: 1; }
   .corte-nombre { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
-
-  .corte-bar-wrap {
-    height: 4px; background: rgba(255,255,255,0.06);
-    border-radius: 2px; margin-top: 4px;
-    overflow: hidden;
-  }
-
-  .corte-bar {
-    height: 100%; border-radius: 2px;
-    background: linear-gradient(90deg, var(--accent), #a78bfa);
-    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
+  .corte-bar-wrap { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .corte-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), #a78bfa); transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
   .corte-right { text-align: right; flex-shrink: 0; }
   .corte-nota { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
   .corte-pct { font-size: 0.7rem; color: var(--muted); }
-
-  .btn-delete-corte {
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); font-size: 14px;
-    padding: 4px; border-radius: 6px;
-    transition: color 0.15s, background 0.15s;
-    flex-shrink: 0;
-  }
-
+  .btn-delete-corte { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px; border-radius: 6px; transition: color 0.15s, background 0.15s; flex-shrink: 0; }
   .btn-delete-corte:hover { color: var(--accent2); background: rgba(255,107,107,0.1); }
-
-  .divider {
-    height: 1px; background: var(--border);
-    margin: 12px 0;
-  }
-
-  .materia-actions {
-    display: flex; gap: 8px;
-  }
-
-  .btn-sm {
-    flex: 1; padding: 8px;
-    border-radius: 10px; border: 1px solid;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem; font-weight: 500;
-    cursor: pointer; transition: all 0.15s;
-    display: flex; align-items: center; justify-content: center; gap: 5px;
-  }
-
-  .btn-agregar-corte {
-    background: rgba(108,99,255,0.1);
-    border-color: rgba(108,99,255,0.3);
-    color: #a78bfa;
-  }
-
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+  .materia-actions { display: flex; gap: 8px; }
+  .btn-sm { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+  .btn-agregar-corte { background: rgba(108,99,255,0.1); border-color: rgba(108,99,255,0.3); color: #a78bfa; }
   .btn-agregar-corte:hover { background: rgba(108,99,255,0.2); }
-
-  .btn-eliminar-materia {
-    background: rgba(255,107,107,0.08);
-    border-color: rgba(255,107,107,0.2);
-    color: var(--accent2);
-    flex: 0; padding: 8px 12px;
-  }
-
+  .btn-eliminar-materia { background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.2); color: var(--accent2); flex: 0; padding: 8px 12px; }
   .btn-eliminar-materia:hover { background: rgba(255,107,107,0.15); }
-
-  /* ── Chevron ── */
-  .chevron {
-    font-size: 14px; color: var(--muted);
-    transition: transform 0.2s;
-    flex-shrink: 0; margin-left: 8px; margin-top: 4px;
-  }
-
-  .chevron.open { transform: rotate(180deg); }
-
-  /* ── Empty ── */
-  .empty-state {
-    text-align: center; padding: 60px 20px;
-    color: var(--muted);
-    animation: fadeIn 0.5s ease;
-  }
-
+  .pct-restante { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--muted); margin-bottom: 8px; }
+  .pct-restante-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .pct-restante-fill { height: 100%; border-radius: 2px; background: rgba(255,255,255,0.2); transition: width 0.5s; }
+  .no-cortes { text-align: center; padding: 16px; color: var(--muted); font-size: 0.82rem; font-style: italic; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); animation: fadeIn 0.5s ease; }
   .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
   .empty-state h2 { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
   .empty-state p { font-size: 0.85rem; line-height: 1.6; }
-
-  /* ── Modal ── */
-  .overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(4px);
-    display: flex; align-items: flex-end;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.25s;
-  }
-
+  .overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
   .overlay.show { opacity: 1; pointer-events: all; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 24px 24px 0 0;
-    width: 100%; max-width: 600px; margin: 0 auto;
-    padding: 24px 20px 36px;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-    max-height: 90dvh; overflow-y: auto;
-  }
-
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 24px 24px 0 0; width: 100%; max-width: 600px; margin: 0 auto; padding: 24px 20px 36px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); max-height: 90dvh; overflow-y: auto; }
   .overlay.show .modal { transform: translateY(0); }
-
-  .modal-handle {
-    width: 40px; height: 4px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 2px;
-    margin: 0 auto 20px;
-  }
-
-  .modal-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: 1.1rem;
-    margin-bottom: 20px;
-  }
-
+  .modal-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 20px; }
   .form-group { margin-bottom: 14px; }
-
-  .form-group label {
-    display: block; font-size: 0.75rem;
-    color: var(--muted); font-weight: 500;
-    text-transform: uppercase; letter-spacing: 0.05em;
-    margin-bottom: 6px;
-  }
-
-  .form-group input, .form-group select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-
-  .form-group input:focus, .form-group select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
-  }
-
-  .form-group select option { background: var(--surface2); }
-
+  .form-group label { display: block; font-size: 0.75rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .form-group input, .form-group select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,0.12); }
   .form-row { display: flex; gap: 10px; }
   .form-row .form-group { flex: 1; }
-
   .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-
-  .btn-cancel {
-    flex: 1; padding: 13px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px; color: var(--muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem; cursor: pointer;
-    transition: background 0.15s;
-  }
-
+  .btn-cancel { flex: 1; padding: 13px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; transition: background 0.15s; }
   .btn-cancel:active { background: rgba(255,255,255,0.08); }
-
-  .btn-confirm {
-    flex: 1.5; padding: 13px;
-    background: linear-gradient(135deg, var(--accent), #a78bfa);
-    border: none; border-radius: 12px; color: white;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.9rem; font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(108,99,255,0.3);
-    transition: transform 0.15s, opacity 0.15s;
-  }
-
+  .btn-confirm { flex: 1.5; padding: 13px; background: linear-gradient(135deg, var(--accent), #a78bfa); border: none; border-radius: 12px; color: white; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(108,99,255,0.3); transition: transform 0.15s, opacity 0.15s; }
   .btn-confirm:active { transform: scale(0.97); opacity: 0.9; }
-
-  /* ── Modal semestre ── */
-  .semestre-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px; margin-bottom: 16px;
-  }
-  .semestre-option {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 10px;
-    text-align: center; cursor: pointer;
-    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 600;
-    transition: all 0.15s; color: var(--muted);
-  }
-  .semestre-option:hover { border-color: rgba(108,99,255,0.4); color: var(--text); }
-  .semestre-option.selected { background: rgba(108,99,255,0.15); border-color: var(--accent); color: #a78bfa; }
-  .semestre-custom {
-    grid-column: 1 / -1;
-    display: flex; gap: 8px; align-items: center;
-  }
-  .semestre-custom input {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px; padding: 10px 12px;
-    color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 0.88rem; outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-  .semestre-custom input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,0.12); }
-  .semestre-hint { font-size: 0.72rem; color: var(--muted); margin-top: -8px; margin-bottom: 4px; }
-
-  /* ── Toast ── */
-  .toast {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px; padding: 10px 20px;
-    font-size: 0.85rem; font-weight: 500;
-    z-index: 300; white-space: nowrap;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
-    opacity: 0;
-    box-shadow: var(--shadow);
-  }
-
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-  /* ── Animaciones ── */
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; } to { opacity: 1; }
-  }
-
-  /* ── Porcentaje restante bar ── */
-  .pct-restante {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 0.75rem; color: var(--muted);
-    margin-bottom: 8px;
-  }
-
-  .pct-restante-bar {
-    flex: 1; height: 3px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 2px; overflow: hidden;
-  }
-
-  .pct-restante-fill {
-    height: 100%; border-radius: 2px;
-    background: rgba(255,255,255,0.2);
-    transition: width 0.5s;
-  }
-
-  /* ── Install banner ── */
-  .install-banner {
-    background: linear-gradient(135deg, rgba(67,233,123,0.1), rgba(108,99,255,0.1));
-    border: 1px solid rgba(67,233,123,0.2);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 20px;
-    display: flex; align-items: center; gap: 12px;
-    animation: slideDown 0.4s ease;
-  }
-
+  .reiniciar-warning { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; font-size: 0.88rem; line-height: 1.6; color: var(--muted); }
+  .reiniciar-warning strong { color: var(--accent2); }
+  .btn-confirm-danger { flex: 1.5; padding: 13px; background: linear-gradient(135deg, #ff6b6b, #ff4757); border: none; border-radius: 12px; color: white; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(255,107,107,0.3); transition: transform 0.15s, opacity 0.15s; }
+  .btn-confirm-danger:active { transform: scale(0.97); opacity: 0.9; }
+  .install-banner { background: linear-gradient(135deg, rgba(67,233,123,0.1), rgba(108,99,255,0.1)); border: 1px solid rgba(67,233,123,0.2); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; animation: slideDown 0.4s ease; }
   .install-banner-text { flex: 1; font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
   .install-banner-text strong { color: var(--accent3); font-family: 'Syne', sans-serif; }
-
-  .btn-install {
-    background: rgba(67,233,123,0.15);
-    border: 1px solid rgba(67,233,123,0.3);
-    color: var(--accent3);
-    padding: 8px 14px; border-radius: 10px;
-    font-size: 0.8rem; font-weight: 600;
-    cursor: pointer; white-space: nowrap;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.15s;
-  }
-
-  .btn-install:active { background: rgba(67,233,123,0.25); }
-
-  .btn-close-banner {
-    background: none; border: none;
-    color: var(--muted); font-size: 18px;
-    cursor: pointer; padding: 4px;
-    line-height: 1;
-  }
-
-  /* ── No cortes ── */
-  .no-cortes {
-    text-align: center; padding: 16px;
-    color: var(--muted); font-size: 0.82rem;
-    font-style: italic;
-  }
-
-  /* ── Scrollbar ── */
+  .btn-install { background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.3); color: var(--accent3); padding: 8px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+  .btn-close-banner { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 4px; line-height: 1; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 10px 20px; font-size: 0.85rem; font-weight: 500; z-index: 300; white-space: nowrap; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s; opacity: 0; box-shadow: var(--shadow); }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(108,99,255,0.3); border-radius: 2px; }
-
-  /* ── Horario modal ── */
-  .overlay-horario { z-index: 210; }
-  .color-picker { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-  .color-dot {
-    width: 22px; height: 22px; border-radius: 50%;
-    cursor: pointer; border: 2px solid transparent;
-    transition: border-color 0.15s, transform 0.15s;
-  }
-  .color-dot.selected { border-color: white; transform: scale(1.15); }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
 <body>
 
-<!-- Sidebar overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
 
-<!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-logo">
       <div class="sidebar-logo-icon">📚</div>
-      NotaUDES
+      Notas
     </div>
     <button class="btn-close-sidebar" onclick="cerrarSidebar()">×</button>
   </div>
-
-  <!-- Nav tabs -->
-  <div class="sidebar-nav">
-    <button class="sidebar-tab active" id="tabMaterias" onclick="showSidebarPanel('materias')">
-      <span class="sidebar-tab-icon">📋</span> Mis materias
-    </button>
-    <button class="sidebar-tab" id="tabHorario" onclick="showSidebarPanel('horario')">
-      <span class="sidebar-tab-icon">🗓️</span> Horario
-    </button>
+  <div class="sidebar-section-label">Mis materias</div>
+  <div class="sidebar-materias-list" id="sidebarMateriasList">
+    <div class="sidebar-empty">Sin materias registradas</div>
   </div>
-
-  <!-- Panel: materias -->
-  <div class="sidebar-panel active" id="panelMaterias">
-    <div class="sidebar-materias-list" id="sidebarMateriasList">
-      <div class="no-horario">Sin materias registradas</div>
-    </div>
-  </div>
-
-  <!-- Panel: horario -->
-  <div class="sidebar-panel" id="panelHorario">
-    <div class="sidebar-horario-wrap">
-      <div class="horario-title">Horario semanal</div>
-      <div id="horarioContent"></div>
-      <button class="btn-add-slot" onclick="abrirModalHorario()">＋ Agregar clase</button>
-    </div>
+  <div class="sidebar-footer">
+    <button class="btn-reiniciar" onclick="abrirModalReiniciar()">
+      🔄 Reiniciar semestre
+    </button>
   </div>
 </div>
 
-<!-- Header -->
 <header>
   <div class="header-left">
     <button class="btn-menu" onclick="abrirSidebar()">☰</button>
@@ -761,20 +217,14 @@
   </button>
 </header>
 
-<!-- Main -->
 <main id="main">
-  <!-- Install banner -->
   <div class="install-banner" id="installBanner" style="display:none">
     <div>📲</div>
-    <div class="install-banner-text">
-      <strong>Instala la app</strong><br>
-      Accede sin internet desde tu pantalla de inicio
-    </div>
+    <div class="install-banner-text"><strong>Instala la app</strong><br>Accede sin internet desde tu pantalla de inicio</div>
     <button class="btn-install" id="btnInstall">Instalar</button>
     <button class="btn-close-banner" onclick="document.getElementById('installBanner').style.display='none'">×</button>
   </div>
 
-  <!-- Promedio global -->
   <div class="ponderado-card" id="ponderadoCard" style="display:none">
     <div class="ponderado-info">
       <h3>Promedio definitivo</h3>
@@ -796,10 +246,8 @@
     </div>
   </div>
 
-  <!-- Materias -->
   <div id="materiasContainer"></div>
 
-  <!-- Empty state -->
   <div class="empty-state" id="emptyState">
     <div class="empty-icon">🎓</div>
     <h2>Sin materias aún</h2>
@@ -815,15 +263,6 @@
     <div class="form-group">
       <label>Nombre de la materia</label>
       <input type="text" id="inputNombreMateria" placeholder="Ej: Cálculo Multivariable"/>
-    </div>
-    <div class="form-group">
-      <label>Semestre</label>
-      <div class="semestre-grid" id="semestreGrid"></div>
-      <div class="semestre-hint">¿No está tu semestre? Escríbelo abajo</div>
-      <div class="semestre-custom">
-        <input type="text" id="inputSemestreCustom" placeholder="Ej: 2027-1, Intercambio…"/>
-      </div>
-      <input type="hidden" id="inputSemestre"/>
     </div>
     <div class="form-group">
       <label>Créditos <span style="color:var(--muted);font-weight:400;text-transform:none">(0 = sin créditos / no cuenta en promedio)</span></label>
@@ -862,88 +301,32 @@
   </div>
 </div>
 
-<!-- Modal Horario -->
-<div class="overlay overlay-horario" id="overlayHorario">
+<!-- Modal Reiniciar -->
+<div class="overlay" id="overlayReiniciar">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">🗓️ Agregar clase al horario</div>
-    <div class="form-group">
-      <label>Materia</label>
-      <select id="inputHorarioMateria">
-        <option value="">Selecciona una materia</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Día</label>
-        <select id="inputHorarioDia">
-          <option value="">Día</option>
-          <option>Lunes</option>
-          <option>Martes</option>
-          <option>Miércoles</option>
-          <option>Jueves</option>
-          <option>Viernes</option>
-          <option>Sábado</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Hora inicio</label>
-        <input type="time" id="inputHorarioHoraInicio"/>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Hora fin</label>
-        <input type="time" id="inputHorarioHoraFin"/>
-      </div>
-      <div class="form-group">
-        <label>Aula (opcional)</label>
-        <input type="text" id="inputHorarioAula" placeholder="Ej: 301-B"/>
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Color</label>
-      <div class="color-picker" id="colorPicker"></div>
+    <div class="modal-title">🔄 Reiniciar semestre</div>
+    <div class="reiniciar-warning">
+      <strong>⚠️ Esto borrará todas tus materias y notas actuales.</strong><br><br>
+      Úsalo cuando empiece un nuevo semestre y quieras empezar desde cero. Esta acción no se puede deshacer.
     </div>
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="cerrarModal('overlayHorario')">Cancelar</button>
-      <button class="btn-confirm" onclick="guardarHorario()">Guardar</button>
+      <button class="btn-cancel" onclick="cerrarModal('overlayReiniciar')">Cancelar</button>
+      <button class="btn-confirm-danger" onclick="confirmarReiniciar()">Sí, reiniciar todo</button>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Estado ──
-let db = JSON.parse(localStorage.getItem('notaudes_db') || '{"materias":[],"horario":[]}');
-if (!db.horario) db.horario = [];
+let db = JSON.parse(localStorage.getItem('notaudes_db') || '{"materias":[]}');
+if (!db.materias) db.materias = [];
 let materiaActualId = null;
 let deferredPrompt = null;
-let selectedColor = '#6c63ff';
 
-const COLORS = ['#6c63ff','#ff6b6b','#43e97b','#f7b731','#38bdf8','#f472b6','#fb923c','#a78bfa'];
-const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-
-// Semestres dinámicos: genera desde 2025-1 hasta 2 años futuros desde hoy
-function getSemestres() {
-  const base = [];
-  const now = new Date();
-  const yearNow = now.getFullYear();
-  for (let y = 2025; y <= yearNow + 3; y++) {
-    base.push(`${y}-1`, `${y}-2`);
-  }
-  return base;
-}
-
-function save() {
-  localStorage.setItem('notaudes_db', JSON.stringify(db));
-}
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-}
+function save() { localStorage.setItem('notaudes_db', JSON.stringify(db)); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
 function colorNota(n) {
   if (n === null) return 'nota-gris';
@@ -952,169 +335,89 @@ function colorNota(n) {
   return 'nota-roja';
 }
 
-// ── Cálculos ──
 function calcularMateria(materia) {
   const cortes = materia.cortes || [];
-  if (!cortes.length) return { notaActual: null, pctUsado: 0, notaNecesaria: null, pctRestante: 100, notaAcumulada: '0.00' };
-
-  let notaAcumulada = 0;
-  let pctUsado = 0;
-
-  cortes.forEach(c => {
-    notaAcumulada += (c.nota * c.porcentaje) / 100;
-    pctUsado += c.porcentaje;
-  });
-
+  if (!cortes.length) return { notaActual: null, pctUsado: 0, notaNecesaria: null, pctRestante: 100 };
+  let notaAcumulada = 0, pctUsado = 0;
+  cortes.forEach(c => { notaAcumulada += (c.nota * c.porcentaje) / 100; pctUsado += c.porcentaje; });
   const pctRestante = 100 - pctUsado;
   let notaNecesaria = null;
-  if (pctRestante > 0) {
-    const meta = 3.0;
-    notaNecesaria = ((meta - notaAcumulada) / pctRestante) * 100;
-    notaNecesaria = Math.max(0, Math.min(5, notaNecesaria));
-  }
-
-  return {
-    notaActual: Math.min(5, notaAcumulada * (100 / Math.max(pctUsado, 1))).toFixed(1),
-    notaAcumulada: notaAcumulada.toFixed(2),
-    pctUsado,
-    notaNecesaria: notaNecesaria !== null ? notaNecesaria.toFixed(2) : null,
-    pctRestante
-  };
+  if (pctRestante > 0) notaNecesaria = Math.max(0, Math.min(5, ((3.0 - notaAcumulada) / pctRestante) * 100));
+  const notaActual = Math.min(5, notaAcumulada * (100 / Math.max(pctUsado, 1))).toFixed(1);
+  return { notaActual, pctUsado, notaNecesaria: notaNecesaria !== null ? notaNecesaria.toFixed(2) : null, pctRestante };
 }
 
-// ── Promedio definitivo ──
-// Lógica:
-// - Materias CON créditos (>0): se incluyen en el promedio ponderado por créditos
-// - Materias SIN créditos (0): tienen su nota individual pero NO afectan el promedio ponderado
-//   (ej: electivas deportivas, práctica social, etc.)
-// El promedio que se muestra es la nota ponderada sobre el porcentaje ya evaluado de cada materia,
-// dando una estimación en tiempo real de cómo van las notas actuales.
 function calcularPromedio() {
-  const materias = db.materias;
-  if (!materias.length) return null;
-
-  let sumaPonderada = 0, totalCreditos = 0;
-  let materiasConNota = 0, materiasSinCreditos = 0;
-
-  materias.forEach(m => {
+  let sumaPonderada = 0, totalCreditos = 0, materiasConNota = 0, sinCreditos = 0;
+  db.materias.forEach(m => {
     const { notaActual, pctUsado } = calcularMateria(m);
-    if (pctUsado === 0) return; // sin notas aún, no cuenta
-
+    if (pctUsado === 0) return;
     const creditos = parseInt(m.creditos) || 0;
-    if (creditos === 0) {
-      materiasSinCreditos++;
-      return; // excluye del ponderado
-    }
-
-    const notaVal = parseFloat(notaActual);
-    sumaPonderada += notaVal * creditos;
+    if (creditos === 0) { sinCreditos++; return; }
+    sumaPonderada += parseFloat(notaActual) * creditos;
     totalCreditos += creditos;
     materiasConNota++;
   });
-
   if (!totalCreditos) return null;
-  return {
-    valor: (sumaPonderada / totalCreditos).toFixed(2),
-    creditos: totalCreditos,
-    materias: materiasConNota,
-    sinCreditos: materiasSinCreditos
-  };
+  return { valor: (sumaPonderada / totalCreditos).toFixed(2), creditos: totalCreditos, materias: materiasConNota, sinCreditos };
 }
 
-// ── Render ──
 function render() {
   const container = document.getElementById('materiasContainer');
   const empty = document.getElementById('emptyState');
   const pCard = document.getElementById('ponderadoCard');
-
   container.innerHTML = '';
 
   if (!db.materias.length) {
     empty.style.display = 'block';
     pCard.style.display = 'none';
     renderSidebarMaterias();
-    renderHorario();
     return;
   }
-
   empty.style.display = 'none';
 
-  // Promedio
   const pond = calcularPromedio();
   if (pond) {
     pCard.style.display = 'flex';
     document.getElementById('ponderadoValor').textContent = pond.valor;
-    let sub = `${pond.creditos} crédito${pond.creditos !== 1 ? 's' : ''} · ${pond.materias} materia${pond.materias !== 1 ? 's' : ''}`;
-    if (pond.sinCreditos > 0) sub += ` · +${pond.sinCreditos} sin créditos`;
+    let sub = pond.creditos + ' crédito' + (pond.creditos !== 1 ? 's' : '') + ' · ' + pond.materias + ' materia' + (pond.materias !== 1 ? 's' : '');
+    if (pond.sinCreditos > 0) sub += ' · +' + pond.sinCreditos + ' sin créditos';
     document.getElementById('ponderadoSub').textContent = sub;
     const pct = (parseFloat(pond.valor) / 5) * 100;
-    const circum = 188;
-    document.getElementById('ringFill').style.strokeDashoffset = circum - (circum * pct / 100);
+    document.getElementById('ringFill').style.strokeDashoffset = 188 - (188 * pct / 100);
     document.getElementById('ringText').textContent = pond.valor;
   } else {
     pCard.style.display = 'none';
   }
 
-  // Materias
   db.materias.forEach(m => {
     const calc = calcularMateria(m);
     const card = document.createElement('div');
     card.className = 'materia-card';
-    card.id = `card-${m.id}`;
-
+    card.id = 'card-' + m.id;
     const notaColor = calc.notaActual !== null ? colorNota(parseFloat(calc.notaActual)) : 'nota-gris';
     const notaDisplay = calc.notaActual !== null ? calc.notaActual : '–';
     const creditos = parseInt(m.creditos) || 0;
 
-    // Banner
     let bannerHtml = '';
     if (calc.notaNecesaria !== null && calc.pctRestante > 0) {
       const nn = parseFloat(calc.notaNecesaria);
-      const posible = nn <= 5;
-      bannerHtml = `
-        <div class="necesitas-banner">
-          ${posible
-            ? `Para aprobar con <strong>3.0</strong>, necesitas <strong>${nn.toFixed(2)}</strong> en el <strong>${calc.pctRestante}%</strong> restante`
-            : `⚠️ Con lo restante (<strong>${calc.pctRestante}%</strong>) no es posible alcanzar 3.0 matemáticamente`
-          }
-        </div>`;
+      bannerHtml = '<div class="necesitas-banner">' + (nn <= 5
+        ? 'Para aprobar con <strong>3.0</strong>, necesitas <strong>' + nn.toFixed(2) + '</strong> en el <strong>' + calc.pctRestante + '%</strong> restante'
+        : '⚠️ Con el <strong>' + calc.pctRestante + '%</strong> restante no es posible alcanzar 3.0 matemáticamente'
+      ) + '</div>';
     } else if (calc.pctUsado >= 100) {
       const nota = parseFloat(calc.notaActual);
-      bannerHtml = `
-        <div class="necesitas-banner" style="border-left-color:${nota >= 3 ? 'var(--accent3)' : 'var(--accent2)'}">
-          ${nota >= 3 ? `✅ Materia <strong>aprobada</strong> con ${calc.notaActual}` : `❌ Materia <strong>reprobada</strong> con ${calc.notaActual}`}
-        </div>`;
+      bannerHtml = '<div class="necesitas-banner" style="border-left-color:' + (nota >= 3 ? 'var(--accent3)' : 'var(--accent2)') + '">' +
+        (nota >= 3 ? '✅ Materia <strong>aprobada</strong> con ' + calc.notaActual : '❌ Materia <strong>reprobada</strong> con ' + calc.notaActual) + '</div>';
     }
 
-    // Cortes
     let cortesHtml = '';
     if (m.cortes && m.cortes.length) {
-      cortesHtml += `
-        <div class="pct-restante">
-          <span>${calc.pctUsado}% evaluado</span>
-          <div class="pct-restante-bar">
-            <div class="pct-restante-fill" style="width:${calc.pctUsado}%"></div>
-          </div>
-          <span>${calc.pctRestante}% restante</span>
-        </div>`;
-
-      cortesHtml += '<div class="cortes-grid">';
+      cortesHtml = '<div class="pct-restante"><span>' + calc.pctUsado + '% evaluado</span><div class="pct-restante-bar"><div class="pct-restante-fill" style="width:' + calc.pctUsado + '%"></div></div><span>' + calc.pctRestante + '% restante</span></div><div class="cortes-grid">';
       m.cortes.forEach(c => {
         const contrib = ((c.nota * c.porcentaje) / 100).toFixed(2);
-        cortesHtml += `
-          <div class="corte-item">
-            <div class="corte-left">
-              <div class="corte-nombre">${c.nombre}</div>
-              <div class="corte-bar-wrap">
-                <div class="corte-bar" style="width:${(c.nota/5)*100}%"></div>
-              </div>
-            </div>
-            <div class="corte-right">
-              <div class="corte-nota ${colorNota(c.nota)}">${c.nota.toFixed(1)}</div>
-              <div class="corte-pct">${c.porcentaje}% → ${contrib} pts</div>
-            </div>
-            <button class="btn-delete-corte" onclick="eliminarCorte('${m.id}','${c.id}')" title="Eliminar">✕</button>
-          </div>`;
+        cortesHtml += '<div class="corte-item"><div class="corte-left"><div class="corte-nombre">' + c.nombre + '</div><div class="corte-bar-wrap"><div class="corte-bar" style="width:' + (c.nota/5*100) + '%"></div></div></div><div class="corte-right"><div class="corte-nota ' + colorNota(c.nota) + '">' + c.nota.toFixed(1) + '</div><div class="corte-pct">' + c.porcentaje + '% → ' + contrib + ' pts</div></div><button class="btn-delete-corte" onclick="eliminarCorte(\'' + m.id + '\',\'' + c.id + '\')">✕</button></div>';
       });
       cortesHtml += '</div>';
     } else {
@@ -1122,201 +425,79 @@ function render() {
     }
 
     const creditosBadge = creditos === 0
-      ? `<span class="badge badge-sin-creditos">sin créditos</span>`
-      : `<span class="badge badge-accent">${creditos} crédito${creditos !== 1 ? 's' : ''}</span>`;
+      ? '<span class="badge badge-sin-creditos">sin créditos</span>'
+      : '<span class="badge badge-accent">' + creditos + ' crédito' + (creditos !== 1 ? 's' : '') + '</span>';
 
-    card.innerHTML = `
-      <div class="materia-header" onclick="toggleCard('${m.id}')">
-        <div class="materia-left">
-          <div class="materia-nombre">${m.nombre}</div>
-          <div class="materia-meta">
-            <span class="badge">${m.semestre}</span>
-            ${creditosBadge}
-            ${m.cortes.length ? `<span class="badge">${m.cortes.length} corte${m.cortes.length !== 1 ? 's' : ''}</span>` : ''}
-          </div>
-        </div>
-        <div class="materia-nota-actual">
-          <div class="nota-grande ${notaColor}">${notaDisplay}</div>
-          <div class="nota-label">/ 5.0</div>
-        </div>
-        <div class="chevron" id="chev-${m.id}">▾</div>
-      </div>
-      <div class="materia-body" id="body-${m.id}">
-        ${bannerHtml}
-        ${cortesHtml}
-        <div class="divider"></div>
-        <div class="materia-actions">
-          <button class="btn-sm btn-agregar-corte" onclick="abrirModalCorte('${m.id}')">
-            ＋ Agregar nota
-          </button>
-          <button class="btn-sm btn-eliminar-materia" onclick="eliminarMateria('${m.id}')">🗑️</button>
-        </div>
-      </div>`;
+    card.innerHTML =
+      '<div class="materia-header" onclick="toggleCard(\'' + m.id + '\')">' +
+        '<div class="materia-left"><div class="materia-nombre">' + m.nombre + '</div>' +
+        '<div class="materia-meta">' + creditosBadge + (m.cortes.length ? '<span class="badge">' + m.cortes.length + ' corte' + (m.cortes.length !== 1 ? 's' : '') + '</span>' : '') + '</div></div>' +
+        '<div class="materia-nota-actual"><div class="nota-grande ' + notaColor + '">' + notaDisplay + '</div><div class="nota-label">/ 5.0</div></div>' +
+        '<div class="chevron" id="chev-' + m.id + '">▾</div>' +
+      '</div>' +
+      '<div class="materia-body" id="body-' + m.id + '">' +
+        bannerHtml + cortesHtml +
+        '<div class="divider"></div>' +
+        '<div class="materia-actions">' +
+          '<button class="btn-sm btn-agregar-corte" onclick="abrirModalCorte(\'' + m.id + '\')">＋ Agregar nota</button>' +
+          '<button class="btn-sm btn-eliminar-materia" onclick="eliminarMateria(\'' + m.id + '\')">🗑️</button>' +
+        '</div>' +
+      '</div>';
 
     container.appendChild(card);
   });
 
   renderSidebarMaterias();
-  renderHorario();
 }
 
-// ── Sidebar: lista de materias ──
 function renderSidebarMaterias() {
   const el = document.getElementById('sidebarMateriasList');
-  if (!db.materias.length) {
-    el.innerHTML = '<div class="no-horario">Sin materias registradas</div>';
-    return;
-  }
+  if (!db.materias.length) { el.innerHTML = '<div class="sidebar-empty">Sin materias registradas</div>'; return; }
   el.innerHTML = db.materias.map(m => {
     const calc = calcularMateria(m);
     const nota = calc.notaActual || '–';
     const cls = calc.notaActual ? colorNota(parseFloat(calc.notaActual)) : 'nota-gris';
-    return `<div class="sidebar-materia-item" onclick="irAMateria('${m.id}')">
-      <div>
-        <div class="sidebar-materia-nombre">${m.nombre}</div>
-        <div style="font-size:0.7rem;color:var(--muted)">${m.semestre}${parseInt(m.creditos)===0?' · sin créditos':' · '+m.creditos+' cred.'}</div>
-      </div>
-      <div class="sidebar-materia-nota ${cls}">${nota}</div>
-    </div>`;
+    const creditos = parseInt(m.creditos) || 0;
+    return '<div class="sidebar-materia-item" onclick="irAMateria(\'' + m.id + '\')">' +
+      '<div><div class="sidebar-materia-nombre">' + m.nombre + '</div>' +
+      '<div style="font-size:0.7rem;color:var(--muted)">' + (creditos === 0 ? 'sin créditos' : creditos + ' crédito' + (creditos !== 1 ? 's' : '')) + '</div></div>' +
+      '<div class="sidebar-materia-nota ' + cls + '">' + nota + '</div></div>';
   }).join('');
 }
 
 function irAMateria(id) {
   cerrarSidebar();
   setTimeout(() => {
-    const card = document.getElementById(`card-${id}`);
+    const card = document.getElementById('card-' + id);
     if (card) {
       card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const body = document.getElementById(`body-${id}`);
-      const chev = document.getElementById(`chev-${id}`);
-      if (body && !body.classList.contains('open')) {
-        body.classList.add('open');
-        chev.classList.add('open');
-      }
+      const body = document.getElementById('body-' + id);
+      const chev = document.getElementById('chev-' + id);
+      if (body && !body.classList.contains('open')) { body.classList.add('open'); chev.classList.add('open'); }
     }
   }, 350);
 }
 
-// ── Horario ──
-function renderHorario() {
-  const el = document.getElementById('horarioContent');
-  if (!db.horario.length) {
-    el.innerHTML = '<div class="no-horario">Sin clases en el horario</div>';
-    return;
-  }
-
-  // Agrupar por día
-  const byDia = {};
-  DIAS.forEach(d => { byDia[d] = []; });
-  db.horario.forEach(h => {
-    if (byDia[h.dia]) byDia[h.dia].push(h);
-  });
-
-  let html = '';
-  DIAS.forEach(dia => {
-    const slots = byDia[dia];
-    if (!slots.length) return;
-    slots.sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
-    html += `<div class="horario-day"><div class="horario-day-label">${dia}</div>`;
-    slots.forEach(s => {
-      html += `<div class="horario-slot">
-        <div class="horario-slot-color" style="background:${s.color}"></div>
-        <div class="horario-slot-info">
-          <div class="horario-slot-materia">${s.materia}</div>
-          <div class="horario-slot-hora">${s.horaInicio} – ${s.horaFin}</div>
-          ${s.aula ? `<div class="horario-slot-aula">📍 ${s.aula}</div>` : ''}
-        </div>
-        <button class="btn-del-slot" onclick="eliminarSlot('${s.id}')">✕</button>
-      </div>`;
-    });
-    html += '</div>';
-  });
-  el.innerHTML = html || '<div class="no-horario">Sin clases en el horario</div>';
-}
-
-function eliminarSlot(id) {
-  db.horario = db.horario.filter(h => h.id !== id);
-  save(); renderHorario();
-  toast('Clase eliminada del horario');
-}
-
-// ── Sidebar ──
 function abrirSidebar() {
   document.getElementById('sidebar').classList.add('open');
   document.getElementById('sidebarOverlay').classList.add('show');
   document.body.style.overflow = 'hidden';
 }
-
 function cerrarSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('show');
   document.body.style.overflow = '';
 }
-
-function showSidebarPanel(panel) {
-  document.querySelectorAll('.sidebar-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel' + panel.charAt(0).toUpperCase() + panel.slice(1)).classList.add('active');
-  document.getElementById('tab' + panel.charAt(0).toUpperCase() + panel.slice(1)).classList.add('active');
-}
-
-// ── Toggle card ──
 function toggleCard(id) {
-  const body = document.getElementById(`body-${id}`);
-  const chev = document.getElementById(`chev-${id}`);
-  body.classList.toggle('open');
-  chev.classList.toggle('open');
+  document.getElementById('body-' + id).classList.toggle('open');
+  document.getElementById('chev-' + id).classList.toggle('open');
 }
-
-// ── Modales ──
-function abrirModal(id) {
-  document.getElementById(id).classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-
-function cerrarModal(id) {
-  document.getElementById(id).classList.remove('show');
-  document.body.style.overflow = '';
-}
-
-// ── Modal Materia ──
-function buildSemestreGrid() {
-  const grid = document.getElementById('semestreGrid');
-  const hidden = document.getElementById('inputSemestre');
-  const custom = document.getElementById('inputSemestreCustom');
-  const semestres = getSemestres();
-
-  grid.innerHTML = semestres.map(s =>
-    `<div class="semestre-option" data-val="${s}" onclick="selectSemestre('${s}')">${s}</div>`
-  ).join('');
-
-  // Reset
-  hidden.value = '';
-  custom.value = '';
-  grid.querySelectorAll('.semestre-option').forEach(o => o.classList.remove('selected'));
-
-  custom.addEventListener('input', () => {
-    if (custom.value.trim()) {
-      hidden.value = custom.value.trim();
-      grid.querySelectorAll('.semestre-option').forEach(o => o.classList.remove('selected'));
-    } else {
-      hidden.value = '';
-    }
-  });
-}
-
-function selectSemestre(val) {
-  document.getElementById('inputSemestre').value = val;
-  document.getElementById('inputSemestreCustom').value = '';
-  document.querySelectorAll('.semestre-option').forEach(o => {
-    o.classList.toggle('selected', o.dataset.val === val);
-  });
-}
+function abrirModal(id) { document.getElementById(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
+function cerrarModal(id) { document.getElementById(id).classList.remove('show'); document.body.style.overflow = ''; }
 
 function abrirModalMateria() {
   document.getElementById('inputNombreMateria').value = '';
   document.getElementById('inputCreditos').value = '';
-  buildSemestreGrid();
   abrirModal('overlayMateria');
   setTimeout(() => document.getElementById('inputNombreMateria').focus(), 300);
 }
@@ -1330,133 +511,58 @@ function abrirModalCorte(materiaId) {
   setTimeout(() => document.getElementById('inputNombreCorte').focus(), 300);
 }
 
-// ── Modal Horario ──
-function buildColorPicker() {
-  const el = document.getElementById('colorPicker');
-  selectedColor = COLORS[0];
-  el.innerHTML = COLORS.map(c =>
-    `<div class="color-dot ${c === selectedColor ? 'selected' : ''}" style="background:${c}" data-color="${c}" onclick="selectColor('${c}')"></div>`
-  ).join('');
+function abrirModalReiniciar() {
+  cerrarSidebar();
+  setTimeout(() => abrirModal('overlayReiniciar'), 300);
 }
 
-function selectColor(c) {
-  selectedColor = c;
-  document.querySelectorAll('.color-dot').forEach(d => {
-    d.classList.toggle('selected', d.dataset.color === c);
-  });
-}
-
-function abrirModalHorario() {
-  // Poblar select de materias
-  const sel = document.getElementById('inputHorarioMateria');
-  sel.innerHTML = '<option value="">Selecciona una materia</option>';
-  db.materias.forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m.nombre;
-    opt.textContent = m.nombre;
-    sel.appendChild(opt);
-  });
-  // También permitir texto libre (si no hay materias registradas)
-  if (!db.materias.length) {
-    sel.innerHTML = '<option value="">— Sin materias registradas —</option>';
-  }
-
-  document.getElementById('inputHorarioDia').value = '';
-  document.getElementById('inputHorarioHoraInicio').value = '';
-  document.getElementById('inputHorarioHoraFin').value = '';
-  document.getElementById('inputHorarioAula').value = '';
-  buildColorPicker();
-  abrirModal('overlayHorario');
-}
-
-function guardarHorario() {
-  const materia = document.getElementById('inputHorarioMateria').value.trim();
-  const dia = document.getElementById('inputHorarioDia').value;
-  const horaInicio = document.getElementById('inputHorarioHoraInicio').value;
-  const horaFin = document.getElementById('inputHorarioHoraFin').value;
-  const aula = document.getElementById('inputHorarioAula').value.trim();
-
-  if (!materia) { toast('Selecciona o escribe la materia'); return; }
-  if (!dia) { toast('Selecciona el día'); return; }
-  if (!horaInicio || !horaFin) { toast('Ingresa la hora de inicio y fin'); return; }
-  if (horaFin <= horaInicio) { toast('La hora de fin debe ser mayor a la de inicio'); return; }
-
-  db.horario.push({ id: uid(), materia, dia, horaInicio, horaFin, aula, color: selectedColor });
-  save();
-  cerrarModal('overlayHorario');
-  renderHorario();
-  toast('🗓️ Clase agregada al horario');
-}
-
-// ── Guardar materia ──
 function guardarMateria() {
   const nombre = document.getElementById('inputNombreMateria').value.trim();
-  const semestre = document.getElementById('inputSemestre').value.trim();
   const creditosRaw = document.getElementById('inputCreditos').value;
   const creditos = creditosRaw === '' ? null : parseInt(creditosRaw);
-
   if (!nombre) { toast('Escribe el nombre de la materia'); return; }
-  if (!semestre) { toast('Selecciona o escribe el semestre'); return; }
   if (creditos === null || isNaN(creditos) || creditos < 0) { toast('Ingresa los créditos (0 o más)'); return; }
-
-  db.materias.push({ id: uid(), nombre, semestre, creditos, cortes: [] });
+  db.materias.push({ id: uid(), nombre, creditos, cortes: [] });
   save(); render();
   cerrarModal('overlayMateria');
   toast('✅ Materia agregada');
 }
 
-// ── Guardar corte ──
 function guardarCorte() {
   const nombre = document.getElementById('inputNombreCorte').value.trim();
   const nota = parseFloat(document.getElementById('inputNota').value);
   const porcentaje = parseInt(document.getElementById('inputPorcentaje').value);
-
   if (!nombre) { toast('Escribe el nombre del corte'); return; }
   if (isNaN(nota) || nota < 0 || nota > 5) { toast('La nota debe estar entre 0.0 y 5.0'); return; }
   if (!porcentaje || porcentaje < 1 || porcentaje > 100) { toast('El porcentaje debe ser entre 1 y 100'); return; }
-
   const materia = db.materias.find(m => m.id === materiaActualId);
   if (!materia) return;
-
   const pctActual = materia.cortes.reduce((s, c) => s + c.porcentaje, 0);
-  if (pctActual + porcentaje > 100) {
-    toast(`Solo quedan ${100 - pctActual}% disponibles`);
-    return;
-  }
-
+  if (pctActual + porcentaje > 100) { toast('Solo quedan ' + (100 - pctActual) + '% disponibles'); return; }
   materia.cortes.push({ id: uid(), nombre, nota, porcentaje });
   save(); render();
   cerrarModal('overlayCorte');
-
   setTimeout(() => {
-    const body = document.getElementById(`body-${materiaActualId}`);
-    const chev = document.getElementById(`chev-${materiaActualId}`);
-    if (body && !body.classList.contains('open')) {
-      body.classList.add('open');
-      chev.classList.add('open');
-    }
+    const body = document.getElementById('body-' + materiaActualId);
+    const chev = document.getElementById('chev-' + materiaActualId);
+    if (body && !body.classList.contains('open')) { body.classList.add('open'); chev.classList.add('open'); }
   }, 100);
-
   toast('📝 Nota guardada');
 }
 
-// ── Eliminar corte ──
 function eliminarCorte(materiaId, corteId) {
   const materia = db.materias.find(m => m.id === materiaId);
   if (!materia) return;
   materia.cortes = materia.cortes.filter(c => c.id !== corteId);
   save(); render();
-
   setTimeout(() => {
-    const body = document.getElementById(`body-${materiaId}`);
-    const chev = document.getElementById(`chev-${materiaId}`);
+    const body = document.getElementById('body-' + materiaId);
+    const chev = document.getElementById('chev-' + materiaId);
     if (body) { body.classList.add('open'); chev.classList.add('open'); }
   }, 50);
-
   toast('Corte eliminado');
 }
 
-// ── Eliminar materia ──
 function eliminarMateria(id) {
   if (!confirm('¿Eliminar esta materia y todas sus notas?')) return;
   db.materias = db.materias.filter(m => m.id !== id);
@@ -1464,7 +570,13 @@ function eliminarMateria(id) {
   toast('🗑️ Materia eliminada');
 }
 
-// ── Toast ──
+function confirmarReiniciar() {
+  db.materias = [];
+  save(); render();
+  cerrarModal('overlayReiniciar');
+  toast('🔄 Semestre reiniciado — ¡a empezar!');
+}
+
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1472,21 +584,14 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ── Cerrar modal al tocar overlay ──
-['overlayMateria','overlayCorte','overlayHorario'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => {
-    if (e.target.id === id) cerrarModal(id);
-  });
+['overlayMateria','overlayCorte','overlayReiniciar'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => { if (e.target.id === id) cerrarModal(id); });
 });
 
-// ── PWA install ──
 window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  const banner = document.getElementById('installBanner');
-  banner.style.display = 'flex';
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
 });
-
 document.getElementById('btnInstall').addEventListener('click', async () => {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
@@ -1496,12 +601,10 @@ document.getElementById('btnInstall').addEventListener('click', async () => {
   if (outcome === 'accepted') toast('✅ ¡App instalada!');
 });
 
-// ── Service Worker ──
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
-// ── Init ──
 render();
 </script>
 </body>
